@@ -3,6 +3,6 @@
 // Written by Sabiq Chaudhary (schaudhary@oicr.on.ca)
 //---------------------------------------------------------
 
-fn main() {
+pub fn detect_STRs() {
     println!("Inside methylation detection");
 }

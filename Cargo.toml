@@ -7,4 +7,12 @@ edition = "2021"
 
 [dependencies]
 rust-htslib = "*"
-bio = "*"
+clap = "2.33.0"
+bio = "0.25.0"
+itertools = "*"
+rand = "0.8.5"
+statrs = "0.15.0"
+intervaltree = "*"
+csv = "*"
+approx = "*"
+cached = "*"

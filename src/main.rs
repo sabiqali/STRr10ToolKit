@@ -2,12 +2,13 @@
 // Copyright 2022 Ontario Institute for Cancer Research
 // Written by Sabiq Chaudhary (schaudhary@oicr.on.ca)
 //---------------------------------------------------------
-//#[macro_use]
+#[macro_use]
 extern crate rust_htslib;
+extern crate clap;
 
 use rust_htslib::{bam, faidx, bam::Read, bam::record::CigarStringView};
 use clap::{App, SubCommand, Arg, value_t};
-use itertools::Itertools;
+///use itertools::Itertools;
 use std::fs::File;
 use std::path::Path;
 use std::io::Write;
@@ -22,7 +23,7 @@ fn main() {
     let matches = App::new("STRr10ToolKit")
         .version("0.1")
         .author("Sabiq Chaudhary <schaudhary@oicr.on.ca>")
-        .about("Toolkit to discover, size and give methylation characteristics from BAMs generated with r10 and a modern basecaller which gives modified base tags")
+        .about("Toolkit to discover, size and give methylation characteristics of STRs from BAMs generated with r10 and a modern basecaller which gives modified base tags")
         .arg(Arg::with_name("bam")
             .short("b")
             .long("bam")
@@ -45,14 +46,15 @@ fn main() {
             .short("c")
             .long("clean")
             .takes_value(true)
-            .help("cleanup any intermediate files"));
+            .help("cleanup any intermediate files"))
+        .get_matches();
 
     let mut min_ins_size = value_t!(matches, "min_ins_size", u32).unwrap_or(50);
 
     let mut output_file = matches.value_of("output_file_name").unwrap_or("STRResults");
 
     println!("{} {}",min_ins_size,output_file);
-    //let mut 
 
-    //let mut regions_of_interest = methylation_detection::detect_STRs()
+    let mut regions_of_interest = methylation_detection::detect_STRs();
 }
+
