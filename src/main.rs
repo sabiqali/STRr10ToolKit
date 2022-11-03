@@ -113,13 +113,10 @@ fn main() {
         for p in bam.pileup() {
             let pileup = p.unwrap();
             let str_sites = str_discovery::detect_loci(window_start, window_end, pileup.alignments());
+            //TODO::get the potential sites back from the above function and if it contains a repeated sequence, output in the following format
+            //OUTPUT::chromosome start end reference_length str_length upstream_methylation in_repeat_methylation downstream_methylation in_repeat_max_methylation in_repeat_min_methylation interruption_motif 
+            //ADDITIONAL::get haplotype tags and output per haplotype count,methylation, and interruptions.
         }
     }
-
-    //let regions_of_interest = methylation_detection::detect_methylation();
-
-    let str_sites = str_discovery::detect_loci();
-
-    //let str_size = str_sizing::detect_size();
 }
 

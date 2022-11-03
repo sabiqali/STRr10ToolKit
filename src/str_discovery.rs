@@ -43,7 +43,7 @@ pub fn detect_loci(window_start: u32, window_end: u32, alignments: rust_htslib::
                             //TODO::call sizing and methylation function if there is a potential str, to calc characteristics
                             //TODO::send sequence of interest as parameter to the sizing
                             //TODO::send record with read start and end positions to calculate methylation
-                            //FORMAT::store in per read map which is potential_sequence maps to {ref_start,ref_end,motif,haplotype,size,methylation}
+                            //FORMAT::store in per read map which is potential_sequence maps to {ref_start,ref_end,motif,haplotype,size,methylation,interruption_motif}
                         }
                     },
                     'S' => {
@@ -58,10 +58,10 @@ pub fn detect_loci(window_start: u32, window_end: u32, alignments: rust_htslib::
             }
         }
 
-        //TODO::aggregate all under per window map which is potential_sequence maps to {ref_start,ref_end,window_start,window_end,motif,haplotype,size,methylation,read_support}
+        //TODO::aggregate all under per window map which is potential_sequence maps to {ref_start,ref_end,window_start,window_end,motif,haplotype,size,methylation,interruption_motif,read_support}
     }
     //TODO::check per window map to see if there are any potential sequences that have more read support than the threshold
     //TODO::check per window map to see if there are any potential sequences that have larger count than the threshold
     //TODO:: if they do return in required format, else return with found_flag set to 0
-    //FORMAT::if they do, send it back to main in the format potential_sequence maps to {found_flag,ref_start,ref_end,window_start,window_end,motif,haplotype,size,min methylation,max methylation,avg methylation,read_support}
+    //FORMAT::if they do, send it back to main in the format potential_sequence maps to {found_flag,ref_start,ref_end,window_start,window_end,motif,haplotype,size,min methylation,max methylation,avg methylation,interruption_motif,read_support}
 }
