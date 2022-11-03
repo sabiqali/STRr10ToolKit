@@ -24,6 +24,8 @@ fn get_haplotag_from_record(record: &bam::Record) -> Option<i32> {
 read and read the corresponding methylation tags. It will average out the methylation over the region specified and give
 the average methylation for the region. but it will also give the max and min methylation. if there are no tags,
 it will return -1 or N/A.*/
-pub fn detect_methylation -> u32 (start_pos: u32, end_pos: u32, motif: &String, record: &bam::Record) {
+pub fn detect_methylation -> u32 (read_start: u32, read_end: u32, record: &bam::Record) {
+    //TODO::use the MM and ML tags in the region from the above coordinates to calculate methylation for this record. return it. 
+    //ADDITIONAL::Also, get the haplotype to get which haplotype the read belongs to. 
     println!("Inside methylation detection");
 }

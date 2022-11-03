@@ -12,11 +12,7 @@ use std::fs::File;
 use std::path::Path;
 use std::io::Write;
 
-mod methylation_detection;
-
 mod str_discovery;
-
-mod str_sizing;
 
 fn get_extension_from_filename(filename: &str) -> Option<&str> {    
     Path::new(filename)        
@@ -111,9 +107,12 @@ fn main() {
     }
 
     for chr in chr_list {
-        bam.fetch( chr );
+        let window_start = 0;
+        let window_end = 2000;
+        bam.fetch( chr ); //TODO: this is naive. change to fetch in sliding window only. so bps has to be measured and then fetched. 
         for p in bam.pileup() {
             let pileup = p.unwrap();
+            let str_sites = str_discovery::detect_loci(window_start, window_end, pileup.alignments());
         }
     }
 

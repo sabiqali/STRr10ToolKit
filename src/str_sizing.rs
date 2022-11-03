@@ -23,7 +23,8 @@ fn get_haplotag_from_record(record: &bam::Record) -> Option<i32> {
 /*function will take in the alignment, the read start, read end, the motif. it will search through the insert positions
 on the read for the motif in a simplistic approach, as we assume the accuracy from r10 kit 14 onwards is high. 
 it will return a dict with a count of the supplied motif and if there are any interruptions in the motif.*/
-pub fn detect_size -> u32 (start_pos: u32, end_pos: u32, motif: &String, record: &bam::Record) {
-
+pub fn detect_size -> u32 (sequence_of_interest: &str, potential_str_sequence: &str) {
+    //TODO::this function will go throught the sequence of interest and check the count and return it
+    //additional:: check if there are any interruptions while counting. if we do this, report count and interruption.
     println!("Inside STR sizing");
 }
