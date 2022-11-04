@@ -3,6 +3,9 @@
 // Written by Sabiq Chaudhary (schaudhary@oicr.on.ca)
 //---------------------------------------------------------
 
+#[macro_use]
+extern crate rust_htslib;
+
 use rust_htslib::{bam, faidx, bam::Read, bam::record::CigarStringView}; 
 
 fn get_haplotag_from_record(record: &bam::Record) -> Option<i32> {

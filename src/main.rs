@@ -70,6 +70,22 @@ fn main() {
             .long("clean")
             .takes_value(true)
             .help("cleanup any intermediate files"))
+        .arg(Arg::with_name("window_size")
+            .long("window_size")
+            .takes_value(true)
+            .help("the size of the search window. Defaults to 5kbp"))
+        .arg(Arg::with_name("min_repeat_size")
+            .long("min_repeat_size")
+            .takes_value(true)
+            .help("minimum length of repeat motif. Defaults to 3"))
+        .arg(Arg::with_name("max_repeat_size")
+            .long("max_repeat_size")
+            .takes_value(true)
+            .help("maximum length of repeat motif. Defaults to 6"))
+        .arg(Arg::with_name("min_map_quality")
+            .long("min_map_quality")
+            .takes_value(true)
+            .help("minimum mapping quality of individual reads. Defaults to"))
         .get_matches();
 
     let min_ins_size = value_t!(matches, "min_ins_size", u32).unwrap_or(50);
@@ -81,6 +97,10 @@ fn main() {
     let reads_phased = value_t!(matches.value_of("is_phased").unwrap())
     let chr_list_opt = matches.value_of("chromosomes").unwrap()
     let clean_flag = value_t!(matches.value_of("clean").unwrap())
+    let window_size = value_t!(matches, "window_size", u32).unwrap_or(5000);
+    let min_repeat_size = value_t!(matches, "min_repeat_size", u32).unwrap_or(3);
+    let max_repeat_size = value_t!(matches, "max_repeat_size", u32).unwrap_or(6);
+    let min_map_quality = value_t!(matches, "min_map_quality", u32).unwrap_or(20);
 
     let mut bam = bam::IndexedReader::from_path(input_bam).unwrap();
     let header = bam::Header::from_template(bam.header());
