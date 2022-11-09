@@ -78,8 +78,43 @@ pub fn length_of_longest_substring(s: String) -> 132 {
     length as i32
 }
 
-pub fn decompose_string(sequence_of_interest: &str) {
+pub fn decompose_string(sequence_of_interest: &str, lower_limit: u32, upper_limit: u32) -> (&str,u32) {
     //TODO::take in the string of interest from the CIGAR String and then find if there is a repeating unit present
+
+    
+    let mut subsequences: HashMap<&str, u32> = HashMap::new();
+
+    for motif_length in (lower_limit,upper_limit) {
+
+        let mut lower_window_var = 0;
+        let mut upper_window_var = motif_length
+
+        while upper_window_var <= sequence_of_interest.len() {
+            sequence_in_window = sequence_of_interest.substring(lower_window_var,upper_window_var);
+
+            //let occurance = subsequences.entry(sequence_in_window).or_insert(1);
+
+            if subsequences.contains_key(sequence_in_window) {
+                //let number_of_occurances = subsequences.get(sequence_in_window);
+                *subsequences.entry(sequence_in_window).or_insert(0) += 1;
+            }
+            else {
+                subsequences.insert(sequence_in_window,1);
+            }
+        }
+    }
+
+    let mut max_key: &str;
+    let mut max_val = 0; //can we use this as count instead of the sizing function?? since we expect reads to be near perfect. NOTE::this does not take into account interruptions.
+
+    for (key, value) in &*map {
+        if value > max_val {
+            max_key = key;
+            max_val = value;
+        }
+    }
+
+    return (max_key,max_val);
 }
 
 pub fn detect_loci(window_start: u32, window_end: u32, alignments: rust_htslib::bam::pileup::Alignments<'_>) {
@@ -112,6 +147,8 @@ pub fn detect_loci(window_start: u32, window_end: u32, alignments: rust_htslib::
                             if potential_str_sequence.trim().is_empty() {
                                 continue;
                             }
+                            read_counter += event_length;
+                            event_length = 0;
                             //TODO::call sizing and methylation function if there is a potential str, to calc characteristics
                             //TODO::send sequence of interest as parameter to the sizing
                             //TODO::send record with read start and end positions to calculate methylation
@@ -125,6 +162,8 @@ pub fn detect_loci(window_start: u32, window_end: u32, alignments: rust_htslib::
                             if potential_str_sequence.trim().is_empty() {
                                 continue;
                             }
+                            read_counter += event_length;
+                            event_length = 0;
                             //TODO::call sizing and methylation function if there is a potential str, to calc characteristics
                             //TODO::send sequence of interest as parameter to the sizing
                             //TODO::send record with read start and end positions to calculate methylation
