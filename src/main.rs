@@ -5,6 +5,7 @@
 #[macro_use]
 extern crate rust_htslib;
 extern crate clap;
+use crate::str_discovery::all_charac_struct;
 
 use rust_htslib::{bam, faidx, bam::Read, bam::record::CigarStringView};
 use clap::{App, SubCommand, Arg, value_t};
@@ -127,6 +128,9 @@ fn main() {
     }
 
     for chr in chr_list {
+
+        let mut window_result: all_charac_struct;
+
         let window_start = 0;
         let window_end = 2000;
         bam.fetch( chr ); //TODO: this is naive. change to fetch in sliding window only. so bps has to be measured and then fetched. 

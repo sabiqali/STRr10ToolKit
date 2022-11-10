@@ -29,7 +29,7 @@ pub fn detect_size -> size_struct (sequence_of_interest: &str, potential_str_seq
 
     let mut motif_length = potential_str_sequence.len()
 
-    let mut output_variable = size_struct;
+    let mut output_variable: size_struct;
 
     let mut i=0;
     let mut j=1;

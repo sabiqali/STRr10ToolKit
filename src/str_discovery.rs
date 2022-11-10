@@ -117,7 +117,7 @@ pub fn decompose_string(sequence_of_interest: &str, lower_limit: u32, upper_limi
     return (max_key,max_val);
 }
 
-pub fn detect_loci(window_start: u32, window_end: u32, alignments: rust_htslib::bam::pileup::Alignments<'_>) {
+pub fn detect_loci(window_start: u32, window_end: u32, alignments: rust_htslib::bam::pileup::Alignments<'_>, lower_limit: u32, upper_limit: u32) {
     println!("Inside STR Discovery");
     //also pass a previous window ref_start and ref_end parameter. if present calculation aligns to the same region, skip this window and move to the next.
 
@@ -143,7 +143,7 @@ pub fn detect_loci(window_start: u32, window_end: u32, alignments: rust_htslib::
                     'I' => {
                         if event_length > 50 {
                             let mut sequence_of_interest = a.record().seq().substring(read_counter,event_length); //slice it from (read_counter, event_length)
-                            let mut potential_str_sequence = decompose_string(&sequence_of_interest);
+                            let mut (potential_str_sequence,potential_count_from_discovery) = decompose_string(&sequence_of_interest,lower_limit,upper_limit);
                             if potential_str_sequence.trim().is_empty() {
                                 continue;
                             }
@@ -158,7 +158,7 @@ pub fn detect_loci(window_start: u32, window_end: u32, alignments: rust_htslib::
                     'S' => {
                         if event_length > 50 {
                             let mut sequence_of_interest = a.record().seq().substring(read_counter,event_length); //slice it from (read_counter, event_length)
-                            let mut potential_str_sequence = decompose_string(&sequence_of_interest);
+                            let mut (potential_str_sequence,potential_count_from_discovery) = decompose_string(&sequence_of_interest,lower_limit,upper_limit);
                             if potential_str_sequence.trim().is_empty() {
                                 continue;
                             }
