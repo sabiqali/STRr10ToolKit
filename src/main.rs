@@ -6,6 +6,7 @@
 extern crate rust_htslib;
 extern crate clap;
 use crate::str_discovery::all_charac_struct;
+use crate::str_discovery::per_window_struct;
 
 use rust_htslib::{bam, faidx, bam::Read, bam::record::CigarStringView};
 use clap::{App, SubCommand, Arg, value_t};
@@ -86,7 +87,11 @@ fn main() {
         .arg(Arg::with_name("min_map_quality")
             .long("min_map_quality")
             .takes_value(true)
-            .help("minimum mapping quality of individual reads. Defaults to"))
+            .help("minimum mapping quality of individual reads. Defaults to 20"))
+        .arg(Arg::with_name("discovery_sensitivity")
+            .long("discovery_sensitivity")
+            .takes_value(true)
+            .help("minimum number of repeat units in the repeat expansion to be considered, to be used with min_ins_size. Defaults to 10"))
         .get_matches();
 
     let min_ins_size = value_t!(matches, "min_ins_size", u32).unwrap_or(50);
@@ -102,6 +107,7 @@ fn main() {
     let min_repeat_size = value_t!(matches, "min_repeat_size", u32).unwrap_or(3);
     let max_repeat_size = value_t!(matches, "max_repeat_size", u32).unwrap_or(6);
     let min_map_quality = value_t!(matches, "min_map_quality", u32).unwrap_or(20);
+    let discovery_sensitivity = value_t!(matches, "discovery_sensitivity", u32).unwrap_or(10);
 
     let mut bam = bam::IndexedReader::from_path(input_bam).unwrap();
     let header = bam::Header::from_template(bam.header());
@@ -129,14 +135,14 @@ fn main() {
 
     for chr in chr_list {
 
-        let mut window_result: all_charac_struct;
+        let mut window_result: per_window_struct;
 
         let window_start = 0;
         let window_end = 2000;
         bam.fetch( chr ); //TODO: this is naive. change to fetch in sliding window only. so bps has to be measured and then fetched. 
         for p in bam.pileup() {
             let pileup = p.unwrap();
-            let str_sites = str_discovery::detect_loci(window_start, window_end, pileup.alignments());
+            let window_result = str_discovery::detect_loci(window_start, window_end, pileup.alignments(), lower_limit, upper_limit, min_read_support, min_ins_size, discovery_sensitivity);
             //TODO::get the potential sites back from the above function and if it contains a repeated sequence, output in the following format
             //OUTPUT::chromosome start end reference_length str_length upstream_methylation in_repeat_methylation downstream_methylation in_repeat_max_methylation in_repeat_min_methylation interruption_motif 
             //ADDITIONAL::get haplotype tags and output per haplotype count,methylation, and interruptions.
