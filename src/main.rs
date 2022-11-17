@@ -13,6 +13,12 @@ use clap::{App, SubCommand, Arg, value_t};
 use std::fs::File;
 use std::path::Path;
 use std::io::Write;
+use std::io;
+use std::io::BufReader;
+use std::io::BufRead;
+use std::str::SplitWhitespace;
+use std::str::Split;
+use std::ffi::OsStr;
 
 mod str_discovery;
 
@@ -24,7 +30,7 @@ fn get_extension_from_filename(filename: &str) -> Option<&str> {
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where P: AsRef<Path>, {
     let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
+    Ok(BufReader::new(file).lines())
 }
 
 fn main() {
@@ -98,11 +104,11 @@ fn main() {
     let min_read_support = value_t!(matches, "min_read_support", u32).unwrap_or(3);
     let output_file_name = matches.value_of("output_file_name").unwrap_or("STRResults");
     let input_bam = matches.value_of("bam").unwrap();
-    let reference_genome = matches.value_of("reference").unwrap()
-    let output_directory = matches.value_of("output_directory").unwrap()
-    let reads_phased = value_t!(matches.value_of("is_phased").unwrap())
-    let chr_list_opt = matches.value_of("chromosomes").unwrap()
-    let clean_flag = value_t!(matches.value_of("clean").unwrap())
+    let reference_genome = matches.value_of("reference").unwrap();
+    let output_directory = matches.value_of("output_directory").unwrap();
+    let reads_phased = matches.value_of("is_phased").unwrap();
+    let chr_list_opt = matches.value_of("chromosomes").unwrap();
+    let clean_flag = matches.value_of("clean").unwrap();
     let window_size = value_t!(matches, "window_size", u32).unwrap_or(5000);
     let min_repeat_size = value_t!(matches, "min_repeat_size", u32).unwrap_or(3);
     let max_repeat_size = value_t!(matches, "max_repeat_size", u32).unwrap_or(6);
@@ -114,6 +120,7 @@ fn main() {
     let header_view = bam::HeaderView::from_header(&header);
 
     // set up header and faidx for pulling reference sequence
+    let chromosome_name;
     let faidx = faidx::Reader::from_path(reference_genome).expect("Could not read reference genome:");
     let tid = header_view.tid(chromosome_name.as_bytes()).unwrap();
     let chromosome_length = header_view.target_len(tid).unwrap() as usize;
@@ -121,28 +128,33 @@ fn main() {
     chromosome_sequence.make_ascii_uppercase();
     let chromosome_bytes = chromosome_sequence.as_bytes();
 
-    if get_extension_from_filename(chr_list_opt) == "txt" {
+    let mut chr_list: Split::<&str>;
+
+    if get_extension_from_filename(chr_list_opt) == Some("txt") {
         if let Ok(lines) = read_lines(chr_list_opt) {
             // Consumes the iterator, returns an (Optional) String
             for line in lines {
-                chr_list = line
+                //chr_list = line.split(" ").map(|s| s.to_string()).collect();
+                chr_list = line.expect("Line to Words").split(" ");
+                //chr_list: SplitWhitespace = line.split_whitespace();
+                break;
             }
         }
     }
-    else {
-        chr_list = chr_list_opt
-    }
+    //else {
+    //    chr_list = chr_list_opt
+    //}
 
     for chr in chr_list {
 
-        let mut window_result: per_window_struct;
+        let mut window_result: Vec<per_window_struct>;
 
         let window_start = 0;
         let window_end = 2000;
         bam.fetch( chr ); //TODO: this is naive. change to fetch in sliding window only. so bps has to be measured and then fetched. 
         for p in bam.pileup() {
             let pileup = p.unwrap();
-            let window_result = str_discovery::detect_loci(window_start, window_end, pileup.alignments(), lower_limit, upper_limit, min_read_support, min_ins_size, discovery_sensitivity);
+            let window_result = str_discovery::detect_loci(window_start, window_end, pileup.alignments(), min_repeat_size, max_repeat_size, min_read_support, min_ins_size, discovery_sensitivity);
             //TODO::get the potential sites back from the above function and if it contains a repeated sequence, output in the following format
             //OUTPUT::chromosome start end reference_length str_length upstream_methylation in_repeat_methylation downstream_methylation in_repeat_max_methylation in_repeat_min_methylation interruption_motif 
             //ADDITIONAL::get haplotype tags and output per haplotype count,methylation, and interruptions.
