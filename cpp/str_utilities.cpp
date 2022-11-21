@@ -37,7 +37,7 @@ struct methylation_stats {
     float avg_methylation;
 };
 
-std::vector<size_t> get_all_found_pos(std::string to_search_in, std::string to_search_for) {
+/*std::vector<size_t> get_all_found_pos(std::string to_search_in, std::string to_search_for) {
     std::vector<size_t> positions; // holds all the positions that sub occurs within str
 
     size_t pos = str.find(sub, 0);
@@ -48,13 +48,13 @@ std::vector<size_t> get_all_found_pos(std::string to_search_in, std::string to_s
     }
 
     return positions;
-}
+}*/
 
 std::tuple<int, std::string> detect_size(std::string sequence_of_interest, std::string potential_str_sequence) {
     int rindex = 0;
     int lindex = 0;
 
-    int motif_length = potential_str_sequence.length()
+    int motif_length = potential_str_sequence.length();
     sizing_struct* output_variable = new sizing_struct();
 
     while ((rindex = sequence_of_interest.find(potential_str_sequence, rindex)) != std::string::npos) {
@@ -63,14 +63,14 @@ std::tuple<int, std::string> detect_size(std::string sequence_of_interest, std::
             output_variable->count++;
         }
         else {
-            output_variable->interruption_motif = potential_str_sequence[lindex:rindex];
+            output_variable->interruption_motif = potential_str_sequence.substr(lindex,rindex);
         }
 
         lindex = rindex;
         rindex += motif_length;
     }
 
-    return {output_variable->count,output_variable->interruption_sequence};
+    return {output_variable->count,output_variable->interruption_motif};
 }
 
 std::tuple<float, float, float> detect_methylation(int region_start, int region_end, bam1_t *b) { //pass bam record here
@@ -85,8 +85,11 @@ std::tuple<float, float, float> detect_methylation(int region_start, int region_
     char *mm_str = bam_aux2Z(bam_aux_get(b, "MM"));
     char *probability_array = bam_aux2Z(bam_aux_get(b, "ML"));
 
+    std::string tmp_mm1(mm_str);
+    std::string tmp_prob(probability_array);
+
     //Multiple mods are not supported as of now
-    if(std::count(mm_str.begin(),mm_str.end(),';') > 1) {
+    if(std::count(tmp_mm1.begin(),tmp_prob.end(),';') > 1) {
         return {0,0,0};
     }
 
@@ -225,14 +228,14 @@ std::tuple<std::string, int> decompose_string(std::string sequence_of_interest, 
         int lower_window_var = 0;
         int upper_window_var = motif_length;
 
-        while(upper_window_var <= sequence_of_interest.len()) {
-            std::string sequence_in_window = sequence_of_interest[lower_window_var:upper_window_var];
+        while(upper_window_var <= sequence_of_interest.length()) {
+            std::string sequence_in_window = sequence_of_interest.substr(lower_window_var,upper_window_var);
 
-            if (subsequences.find(sequence_in_window) == subsequence.end()) {
-                subsequence.insert({sequence_in_window, 1});
+            if (subsequences.find(sequence_in_window) == subsequences.end()) {
+                subsequences.insert({sequence_in_window, 1});
             }
             else {
-                subsequence[sequence_in_window]+=1;
+                subsequences[sequence_in_window]+=1;
             }
         }
     }
@@ -241,9 +244,9 @@ std::tuple<std::string, int> decompose_string(std::string sequence_of_interest, 
     std::string max_key;
 
     for(auto &entry: subsequences) {
-        if(entry->second > max_value) {
-            max_key = entry->first;
-            max_value = entry->second;
+        if(entry.second > max_value) {
+            max_key = entry.first;
+            max_value = entry.second;
         }
     }
 

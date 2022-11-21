@@ -20,8 +20,6 @@
 #include "./htslib/htslib/hts.h"
 #include "./str_utilities.h"
 
-KSEQ_INIT(gzFile, gzread)
-
 static const char *ALIGN_MESSAGE = 
 "Usage: ./strr10toolkit [OPTIONS] --bam input.bam --reference reference_genome.fasta --output_file_name output_file_name --output_directory output_directory\n"
 "Align reads to control oligos provided.\n"
@@ -169,7 +167,7 @@ void parse_align_options(int argc, char** argv) {
 }
 
 int ref_chr_size(std::string chr_name) {
-    switch (chr_name)
+    switch (chr_name.c_str())
     {
     case "chr1":
         return 248956422;
@@ -229,9 +227,9 @@ int main(int argc, char *argv[])  {
     parse_align_options(argc , argv);
 
     //TODO::Init the bam file and get reads in window in chromosomes requested. Pass the alignments to the utilities to compute the stats
-    samFile *fp = sam_open(opt::bam_file, "r");
+    samFile *fp = sam_open(opt::bam_file.c_str(), "r");
     std::string bai_file = opt::bam_file + ".bai";
-    hts_idx_t *idx = sam_index_load(fp, bai_file);
+    hts_idx_t *idx = sam_index_load(fp, bai_file.c_str());
     bam_hdr_t *h = sam_hdr_read(fp);
     bam1_t *b = bam_init1();
 
@@ -252,11 +250,11 @@ int main(int argc, char *argv[])  {
         int upper_limit = opt::window_size;
 
         while(upper_limit <= ref_chr_size(chr)) {
-            per_window_struct* window_output = new per_read_struct();
+            per_window_struct* window_output = new per_window_struct();
 
             std::string region = chr+":"+std::to_string(lower_limit)+"-"+std::to_string(upper_limit);
             //generates iterator over region
-            hts_itr_t *itr = sam_itr_querys(idx, h, region);
+            hts_itr_t *itr = sam_itr_querys(idx, h, region.c_str());
             /* or do i use this?:
             int bam_fetch(bamFile fp, const bam_index_t *idx, int tid, int beg, int end, void *data, bam_fetch_f func);
             */
@@ -275,7 +273,7 @@ int main(int argc, char *argv[])  {
                 /*printf("%s\t%d\t%d\n", h->target_name[b->core.tid], b->core.pos,
                 b->core.pos + bam_cigar2rlen(b->core.n_cigar, bam_get_cigar(b)));*/
                 //bam handling derived from: https://www.biostars.org/p/4211/
-                int depth[REF_LEN], x, j, k;
+                int x, j, k;
                 uint32_t *cigar = bam1_cigar(b);
                 for (k = 0, x = b->core.pos; k < b->core.n_cigar; ++k) {
                     int op = cigar[k]&16;
@@ -296,7 +294,7 @@ int main(int argc, char *argv[])  {
                             }
                             else {
                                 //call functions here
-                                std::string sequence_of_interest = query_sequence[read_pos_counter:l];
+                                std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
 
                                 auto [potential_str_sequence,potential_count_from_discovery] = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
 
@@ -350,7 +348,7 @@ int main(int argc, char *argv[])  {
                             }
                             else {
                                 //call functions here
-                                std::string sequence_of_interest = query_sequence[read_pos_counter:l];
+                                std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
 
                                 auto [potential_str_sequence,potential_count_from_discovery] = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
 
@@ -399,7 +397,7 @@ int main(int argc, char *argv[])  {
                             }
                             else {
                                 //call functions here
-                                std::string sequence_of_interest = query_sequence[read_pos_counter:l];
+                                std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
 
                                 auto [potential_str_sequence,potential_count_from_discovery] = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
 
@@ -443,7 +441,7 @@ int main(int argc, char *argv[])  {
                             std::cerr<<"STRr10ToolKit::Cigar_Parse: cannot parse cigar element";
                     }
                 }
-                window_output->window_aggregate.push_back(read_output);
+                window_output->window_aggregate.push_back(*read_output);
                 if(window_output->motif_aggregate.find(read_output->motif) == window_output->motif_aggregate.end()) {
                     window_output->motif_aggregate.insert({read_output->motif,1});
                 }
@@ -452,8 +450,8 @@ int main(int argc, char *argv[])  {
                 }
                 int max_read_support=0;
                 for(auto &entry: window_output->motif_aggregate) {
-                    if(entry->second > max_read_support) {
-                        max_read_support = entry->second;
+                    if(entry.second > max_read_support) {
+                        max_read_support = entry.second;
                     }
                 }
                 if(max_read_support >= opt::min_read_support) {
