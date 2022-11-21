@@ -120,13 +120,13 @@ fn main() {
     let header_view = bam::HeaderView::from_header(&header);
 
     // set up header and faidx for pulling reference sequence
-    let chromosome_name;
+    //let chromosome_name;
     let faidx = faidx::Reader::from_path(reference_genome).expect("Could not read reference genome:");
-    let tid = header_view.tid(chromosome_name.as_bytes()).unwrap();
-    let chromosome_length = header_view.target_len(tid).unwrap() as usize;
-    let mut chromosome_sequence = faidx.fetch_seq_string(chromosome_name, 0, chromosome_length).unwrap();
-    chromosome_sequence.make_ascii_uppercase();
-    let chromosome_bytes = chromosome_sequence.as_bytes();
+    //let tid = header_view.tid(chromosome_name.as_bytes()).unwrap();
+    //let chromosome_length = header_view.target_len(tid).unwrap() as usize;
+    //let mut chromosome_sequence = faidx.fetch_seq_string(chromosome_name, 0, chromosome_length).unwrap();
+    //chromosome_sequence.make_ascii_uppercase();
+    //let chromosome_bytes = chromosome_sequence.as_bytes();
 
     let mut chr_list: Split::<&str>;
 

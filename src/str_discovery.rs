@@ -110,11 +110,13 @@ pub fn detect_size(sequence_of_interest: &str, potential_str_sequence: &str) -> 
     let mut j=1;
     let mut count = 0;
     while j <= v.len() {
-        if v[j] - v[i] == motif_length {
+        let (iindex,istring) = v[i];
+        let (jindex,jstring) = v[j];
+        if jindex - iindex == motif_length {
             output_variable.count+=1;
         }
         else {
-            output_variable.interruption_motif = sequence_of_interest.substring(v[i], v[i]+motif_length)
+            output_variable.interruption_motif = sequence_of_interest.substring(iindex, iindex+motif_length)
         }
         i+=1;
         j+=1;
@@ -164,10 +166,10 @@ pub fn detect_methylation(read_start: u32, read_end: u32, record: &bam::Record) 
     let mut read_tag_count = 0;
     let mut read_tag_current_base = 0;
 
-    let mut max_methylation = 0;
-    let mut min_methylation = 0;
-    let mut avg_methylation = 0;
-    let mut total_methylation = 0;
+    let mut max_methylation: f64 = 0.0;
+    let mut min_methylation: f64 = 0.0;
+    let mut avg_methylation: f64 = 0.0;
+    let mut total_methylation: f64 = 0.0;
 
     //does this need to be nested?
     let mut tmp_mm_str = get_mm_tag(record); 
@@ -178,7 +180,7 @@ pub fn detect_methylation(read_start: u32, read_end: u32, record: &bam::Record) 
             
     // TODO: handle multiple mods
     if mm_str.matches(';').count() != 1 {
-        return None;
+        return (0.0,0.0,0.0);
     }
 
     let first_mod_str = mm_str.split(';').next().unwrap();
@@ -202,13 +204,13 @@ pub fn detect_methylation(read_start: u32, read_end: u32, record: &bam::Record) 
         }
     }
     if read_tag_count > read_end {
-        avg_methylation = total_methylation / (read_end - read_start);
+        avg_methylation = total_methylation / (read_end - read_start) as f64;
     }
     else if read_tag_count < read_end && read_tag_count > read_start {
-        avg_methylation = total_methylation / (read_tag_count - read_start);
+        avg_methylation = total_methylation / (read_tag_count - read_start) as f64;
     }
     else if read_tag_count < read_start {
-        avg_methylation = 0
+        avg_methylation = 0.0;
     }
     return (avg_methylation,min_methylation, max_methylation);
 }
@@ -220,7 +222,7 @@ pub fn decompose_string(sequence_of_interest: &str, lower_limit: u32, upper_limi
 
     let mut subsequences: HashMap<&str, u32> = HashMap::new();
 
-    for motif_length in (lower_limit,upper_limit) {
+    for motif_length in (lower_limit..=upper_limit) {
 
         let mut lower_window_var = 0;
         let mut upper_window_var = motif_length;
