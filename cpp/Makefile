@@ -1,4 +1,4 @@
-LIBS = -lz -lm -llzma -lbz2 -lpthread -lcurl -lssl -lcrypto -lz -lhts -ftree-vectorize
+LIBS = -lz -lm -llzma -lbz2 -lpthread -lcurl -lz -lhts -ftree-vectorize
 
 DEPS = str_utilities.h
 

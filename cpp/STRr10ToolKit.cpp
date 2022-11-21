@@ -264,7 +264,12 @@ int main(int argc, char *argv[])  {
 
                 int read_pos_counter = 0;
                 int ref_pos_counter = 0;
-                std::string query_sequence = bam1_seq(b);
+                auto query_sequence_encoded = bam_get_seq(b);
+                std::string query_sequence;
+
+                for(int i=0;i<b->core.l_qseq;i++){
+                    query_sequence += bam_seqi(bam_get_seq(b), i);
+                }
 
                 auto ref_start_pos = b->core.pos;
 
@@ -272,7 +277,7 @@ int main(int argc, char *argv[])  {
                 b->core.pos + bam_cigar2rlen(b->core.n_cigar, bam_get_cigar(b)));*/
                 //bam handling derived from: https://www.biostars.org/p/4211/
                 int x, j, k;
-                uint32_t *cigar = bam1_cigar(b);
+                uint32_t *cigar = bam_get_cigar(b);
                 for (k = 0, x = b->core.pos; k < b->core.n_cigar; ++k) {
                     int op = cigar[k]&16;
                     int l = cigar[k]>>4;
@@ -319,7 +324,7 @@ int main(int argc, char *argv[])  {
                                 read_output->region_end = read_pos_counter+l;
                                 read_output->interruption_motif = sizing_result.interruption_motif;
                                 read_output->size = sizing_result.count;
-                                read_output->query_name = bam1_qname(b);
+                                read_output->query_name = bam_get_qname(b);
                                 if(bam_is_rev(b)) {
                                     read_output->motif = dna_reverse_complement(decomposer_result.potential_sequence_in_window);
                                     read_output->strand = '-';
@@ -380,7 +385,7 @@ int main(int argc, char *argv[])  {
                                 read_output->region_end = read_pos_counter+l;
                                 read_output->interruption_motif = sizing_result.interruption_motif;
                                 read_output->size = sizing_result.count;
-                                read_output->query_name = bam1_qname(b);
+                                read_output->query_name = bam_get_qname(b);
                                 if(bam_is_rev(b)) {
                                     read_output->motif = dna_reverse_complement(decomposer_result.potential_sequence_in_window);
                                     read_output->strand = '-';
@@ -430,7 +435,7 @@ int main(int argc, char *argv[])  {
                                 read_output->region_end = read_pos_counter+l;
                                 read_output->interruption_motif = sizing_result.interruption_motif;
                                 read_output->size = sizing_result.count;
-                                read_output->query_name = bam1_qname(b);
+                                read_output->query_name = bam_get_qname(b);
                                 if(bam_is_rev(b)) {
                                     read_output->motif = dna_reverse_complement(decomposer_result.potential_sequence_in_window);
                                     read_output->strand = '-';
