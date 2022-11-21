@@ -1,6 +1,5 @@
 #include <zlib.h>
 #include <stdio.h>
-#include "kseq.h"
 #include <cstring>
 #include <iostream>
 #include <stdlib.h>
@@ -14,8 +13,11 @@
 #include <chrono>
 #include <sstream>
 #include <getopt.h>
-#include "htslib/sam.h"
-#include "htslib/bam.h"
+//#include "./htslib/bam.h"
+#include "./htslib/htslib/vcf.h"
+#include "./htslib/htslib/sam.h"
+#include "./htslib/htslib/faidx.h"
+#include "./htslib/htslib/hts.h"
 #include "./str_utilities.h"
 
 KSEQ_INIT(gzFile, gzread)

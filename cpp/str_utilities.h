@@ -18,8 +18,11 @@
 #include <sstream>
 #include <getopt.h>
 #include <tuple>
-#include "htslib/sam.h"
-#include "htslib/bam.h"
+//#include "./htslib/bam.h"
+#include "./htslib/htslib/vcf.h"
+#include "./htslib/htslib/sam.h"
+#include "./htslib/htslib/faidx.h"
+#include "./htslib/htslib/hts.h"
 
 std::tuple<int, std::string> detect_size(std::string sequence_of_interest, std::string potential_str_sequence);
 
