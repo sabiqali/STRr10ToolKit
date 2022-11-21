@@ -2,7 +2,7 @@ LIBS = -lz -lm -llzma -lbz2 -lpthread -lcurl -lssl -lcrypto -lz -lhts -ftree-vec
 
 DEPS = str_utilities.h
 
-CC=g++
+CC=gcc
 
 OBJ = str_utilities.o STRr10ToolKit.o 
 
@@ -27,5 +27,5 @@ endif
 	$(CC) -c -o $@ $< $(CFLAGS) $(HTS_INCLUDE) $(LIBS)
 
 STRr10ToolKit: $(OBJ)
-	$(CC) -shared -g -Wall -Wextra -std=c++14 -fPIC -o $@ $^ $(HTS_INCLUDE) $(LIBS) $(CFLAGS)
+	$(CC) -shared -g -Wall -Wextra -std=c++17 -fPIC -o $@ $^ $(HTS_INCLUDE) $(LIBS) $(CFLAGS)
 

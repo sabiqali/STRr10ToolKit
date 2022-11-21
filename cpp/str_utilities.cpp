@@ -21,22 +21,6 @@ std::string dna_reverse_complement(std::string seq) {
     return seq;
 }
 
-struct decomposer_struct {
-    std::string potential_sequences_in_window;
-    int potential_count_in_window;
-}decomposer_output;
-
-struct sizing_struct {
-    int count;
-    std::string interruption_motif;
-}sizing_out;
-
-struct methylation_stats {
-    float max_methylation;
-    float min_methylation;
-    float avg_methylation;
-};
-
 /*std::vector<size_t> get_all_found_pos(std::string to_search_in, std::string to_search_for) {
     std::vector<size_t> positions; // holds all the positions that sub occurs within str
 
@@ -50,7 +34,7 @@ struct methylation_stats {
     return positions;
 }*/
 
-std::tuple<int, std::string> detect_size(std::string sequence_of_interest, std::string potential_str_sequence) {
+sizing_struct detect_size(std::string sequence_of_interest, std::string potential_str_sequence) {
     int rindex = 0;
     int lindex = 0;
 
@@ -70,10 +54,13 @@ std::tuple<int, std::string> detect_size(std::string sequence_of_interest, std::
         rindex += motif_length;
     }
 
-    return {output_variable->count,output_variable->interruption_motif};
+    sizing_struct return_variable = {output_variable->count,output_variable->interruption_motif};
+
+    return return_variable;
+    //return std::make_tuple(output_variable->count,output_variable->interruption_motif);
 }
 
-std::tuple<float, float, float> detect_methylation(int region_start, int region_end, bam1_t *b) { //pass bam record here
+methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b) { //pass bam record here
     
     float min_methylation = 0;
     float max_methylation = 0;
@@ -90,7 +77,10 @@ std::tuple<float, float, float> detect_methylation(int region_start, int region_
 
     //Multiple mods are not supported as of now
     if(std::count(tmp_mm1.begin(),tmp_prob.end(),';') > 1) {
-        return {0,0,0};
+        //return std::make_tuple(0,0,0);
+        methylation_stats return_variable = {0,0,0};
+
+        return return_variable;
     }
 
     std::vector<std::string> positions;
@@ -145,7 +135,11 @@ std::tuple<float, float, float> detect_methylation(int region_start, int region_
         avg_methylation = 0;
     }
 
-    return {min_methylation,max_methylation,avg_methylation};
+    methylation_stats return_variable = {max_methylation,min_methylation,avg_methylation};
+
+    return return_variable;
+
+    //return std::make_tuple(min_methylation,max_methylation,avg_methylation);
 }
 
 /*std::tuple<*methylation_stats, *methylation_stats, *methylation_stats> detect_methylation_all_regions(int read_start, int read_end, bam1_t *b) { //pass bam record here
@@ -220,7 +214,7 @@ std::tuple<float, float, float> detect_methylation(int region_start, int region_
     return {min_methylation,max_methylation,avg_methylation};
 }*/
 
-std::tuple<std::string, int> decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
+decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
 
     std::map<std::string, int> subsequences;
 
@@ -232,7 +226,7 @@ std::tuple<std::string, int> decompose_string(std::string sequence_of_interest, 
             std::string sequence_in_window = sequence_of_interest.substr(lower_window_var,upper_window_var);
 
             if (subsequences.find(sequence_in_window) == subsequences.end()) {
-                subsequences.insert({sequence_in_window, 1});
+                subsequences.insert(make_pair(sequence_in_window, 1));
             }
             else {
                 subsequences[sequence_in_window]+=1;
@@ -250,5 +244,9 @@ std::tuple<std::string, int> decompose_string(std::string sequence_of_interest, 
         }
     }
 
-    return {max_key,max_value};
+    decomposer_struct return_variable = {max_key,max_value};
+
+    return return_variable;
+
+    //return std::make_tuple(max_key,max_value);
 }

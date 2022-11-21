@@ -167,59 +167,57 @@ void parse_align_options(int argc, char** argv) {
 }
 
 int ref_chr_size(std::string chr_name) {
-    switch (chr_name.c_str())
-    {
-    case "chr1":
+
+    if(chr_name.compare("chr1") == 0)
         return 248956422;
-    case "chr2":
+    else if(chr_name.compare("chr2") == 0)
         return 242193529;
-    case "chr3":
+    else if(chr_name.compare("chr3") == 0)
         return 198295559;
-    case "chr4":
+    else if(chr_name.compare("chr4") == 0)
         return 190214555;
-    case "chr5":
+    else if(chr_name.compare("chr5") == 0)
         return 181538259;
-    case "chr6":
+    else if(chr_name.compare("chr6") == 0)
         return 170805979;
-    case "chr7":
+    else if(chr_name.compare("chr7") == 0)
         return 159345973;
-    case "chr8":
+    else if(chr_name.compare("chr8") == 0)
         return 145138636;
-    case "chr9":
+    else if(chr_name.compare("chr9") == 0)
         return 138394717;
-    case "chr10":
+    else if(chr_name.compare("chr10") == 0)
         return 133797422;
-    case "chr11":
+    else if(chr_name.compare("chr11") == 0)
         return 135086622;
-    case "chr12":
+    else if(chr_name.compare("chr12") == 0)
         return 133275309;
-    case "chr13":
+    else if(chr_name.compare("chr13") == 0)
         return 114364328;
-    case "chr14":
+    else if(chr_name.compare("chr14") == 0)
         return 107043718;
-    case "chr15":
+    else if(chr_name.compare("chr15") == 0)
         return 101991189;
-    case "chr16":
+    else if(chr_name.compare("chr16") == 0)
         return 90338345;
-    case "chr17":
+    else if(chr_name.compare("chr17") == 0)
         return 83257441;
-    case "chr18":
+    else if(chr_name.compare("chr18") == 0)
         return 80373285;
-    case "chr19":
+    else if(chr_name.compare("chr19") == 0)
         return 58617616;
-    case "chr20":
+    else if(chr_name.compare("chr20") == 0)
         return 64444167;
-    case "chr21":
+    else if(chr_name.compare("chr21") == 0)
         return 46709983;
-    case "chr22":
+    else if(chr_name.compare("chr22") == 0)
         return 50818468;
-    case "chrX":
+    else if(chr_name.compare("chrX") == 0)
         return 156040895;
-    case "chrY":
+    else if(chr_name.compare("chrY") == 0)
         return 57227415;
-    default:
+    else
         return 0;
-    }
 }
 
 int main(int argc, char *argv[])  {
@@ -296,17 +294,21 @@ int main(int argc, char *argv[])  {
                                 //call functions here
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
 
-                                auto [potential_str_sequence,potential_count_from_discovery] = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
+                                sizing_struct sizing_result;
+                                decomposer_struct decomposer_result;
+                                methylation_stats methylation_results;
 
-                                auto [count,interrupting_motif] = detect_size(sequence_of_interest,potential_str_sequence);
+                                decomposer_result = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
 
-                                auto [min_methylation,max_methylation,avg_methylation] = detect_methylation(read_pos_counter,l,b); 
+                                sizing_result = detect_size(sequence_of_interest,decomposer_result.potential_sequence_in_window);
 
-                                if(count<=opt::discovery_sensitivity) {
+                                methylation_results = detect_methylation(read_pos_counter,l,b); 
+
+                                if(sizing_result.count<=opt::discovery_sensitivity) {
                                     read_pos_counter += l;
                                     break;
                                 }
-                                if(potential_str_sequence.empty()) {
+                                if(decomposer_result.potential_sequence_in_window.empty()) {
                                     read_pos_counter += l;
                                     break;
                                 }
@@ -315,20 +317,20 @@ int main(int argc, char *argv[])  {
                                 read_output->region_ref_end = read_output->region_ref_start + 1;
                                 read_output->region_start = read_pos_counter;
                                 read_output->region_end = read_pos_counter+l;
-                                read_output->interruption_motif = interrupting_motif;
-                                read_output->size = count;
+                                read_output->interruption_motif = sizing_result.interruption_motif;
+                                read_output->size = sizing_result.count;
                                 read_output->query_name = bam1_qname(b);
                                 if(bam_is_rev(b)) {
-                                    read_output->motif = dna_reverse_complement(potential_str_sequence);
+                                    read_output->motif = dna_reverse_complement(decomposer_result.potential_sequence_in_window);
                                     read_output->strand = '-';
                                 } 
                                 else {
-                                    read_output->motif = potential_str_sequence;
+                                    read_output->motif = decomposer_result.potential_sequence_in_window;
                                     read_output->strand = '+';
                                 }
-                                read_output->min_methylation = min_methylation;
-                                read_output->max_methylation = max_methylation;
-                                read_output->avg_methylation = avg_methylation;
+                                read_output->min_methylation = methylation_results.min_methylation;
+                                read_output->max_methylation = methylation_results.max_methylation;
+                                read_output->avg_methylation = methylation_results.avg_methylation;
 
                                 read_pos_counter += l;
                             }
@@ -350,17 +352,21 @@ int main(int argc, char *argv[])  {
                                 //call functions here
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
 
-                                auto [potential_str_sequence,potential_count_from_discovery] = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
+                                sizing_struct sizing_result;
+                                decomposer_struct decomposer_result;
+                                methylation_stats methylation_results;
 
-                                auto [count,interrupting_motif] = detect_size(sequence_of_interest,potential_str_sequence);
+                                decomposer_result = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
 
-                                auto [min_methylation,max_methylation,avg_methylation] = detect_methylation(read_pos_counter,l,b); 
+                                sizing_result = detect_size(sequence_of_interest,decomposer_result.potential_sequence_in_window);
 
-                                if(count<=opt::discovery_sensitivity) {
+                                methylation_results = detect_methylation(read_pos_counter,l,b); 
+
+                                if(sizing_result.count<=opt::discovery_sensitivity) {
                                     read_pos_counter += l;
                                     break;
                                 }
-                                if(potential_str_sequence.empty()) {
+                                if(decomposer_result.potential_sequence_in_window.empty()) {
                                     read_pos_counter += l;
                                     break;
                                 }
@@ -372,20 +378,20 @@ int main(int argc, char *argv[])  {
                                 read_output->region_ref_end = read_output->region_ref_start + 1;
                                 read_output->region_start = read_pos_counter;
                                 read_output->region_end = read_pos_counter+l;
-                                read_output->interruption_motif = interrupting_motif;
-                                read_output->size = count;
+                                read_output->interruption_motif = sizing_result.interruption_motif;
+                                read_output->size = sizing_result.count;
                                 read_output->query_name = bam1_qname(b);
                                 if(bam_is_rev(b)) {
-                                    read_output->motif = dna_reverse_complement(potential_str_sequence);
+                                    read_output->motif = dna_reverse_complement(decomposer_result.potential_sequence_in_window);
                                     read_output->strand = '-';
                                 } 
                                 else {
-                                    read_output->motif = potential_str_sequence;
+                                    read_output->motif = decomposer_result.potential_sequence_in_window;
                                     read_output->strand = '+';
                                 }
-                                read_output->min_methylation = min_methylation;
-                                read_output->max_methylation = max_methylation;
-                                read_output->avg_methylation = avg_methylation;
+                                read_output->min_methylation = methylation_results.min_methylation;
+                                read_output->max_methylation = methylation_results.max_methylation;
+                                read_output->avg_methylation = methylation_results.avg_methylation;
 
                                 read_pos_counter += l;
                             }
@@ -399,17 +405,21 @@ int main(int argc, char *argv[])  {
                                 //call functions here
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
 
-                                auto [potential_str_sequence,potential_count_from_discovery] = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
+                                sizing_struct sizing_result;
+                                decomposer_struct decomposer_result;
+                                methylation_stats methylation_results;
 
-                                auto [count,interrupting_motif] = detect_size(sequence_of_interest,potential_str_sequence);
+                                decomposer_result = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
 
-                                auto [min_methylation,max_methylation,avg_methylation] = detect_methylation(read_pos_counter,l,b); 
+                                sizing_result = detect_size(sequence_of_interest,decomposer_result.potential_sequence_in_window);
 
-                                if(count<=opt::discovery_sensitivity) {
+                                methylation_results = detect_methylation(read_pos_counter,l,b); 
+
+                                if(sizing_result.count<=opt::discovery_sensitivity) {
                                     read_pos_counter += l;
                                     break;
                                 }
-                                if(potential_str_sequence.empty()) {
+                                if(decomposer_result.potential_sequence_in_window.empty()) {
                                     read_pos_counter += l;
                                     break;
                                 }
@@ -418,20 +428,20 @@ int main(int argc, char *argv[])  {
                                 read_output->region_ref_end = read_output->region_ref_start + 1;
                                 read_output->region_start = read_pos_counter;
                                 read_output->region_end = read_pos_counter+l;
-                                read_output->interruption_motif = interrupting_motif;
-                                read_output->size = count;
+                                read_output->interruption_motif = sizing_result.interruption_motif;
+                                read_output->size = sizing_result.count;
                                 read_output->query_name = bam1_qname(b);
                                 if(bam_is_rev(b)) {
-                                    read_output->motif = dna_reverse_complement(potential_str_sequence);
+                                    read_output->motif = dna_reverse_complement(decomposer_result.potential_sequence_in_window);
                                     read_output->strand = '-';
                                 } 
                                 else {
-                                    read_output->motif = potential_str_sequence;
+                                    read_output->motif = decomposer_result.potential_sequence_in_window;
                                     read_output->strand = '+';
                                 }
-                                read_output->min_methylation = min_methylation;
-                                read_output->max_methylation = max_methylation;
-                                read_output->avg_methylation = avg_methylation;
+                                read_output->min_methylation = methylation_results.min_methylation;
+                                read_output->max_methylation = methylation_results.max_methylation;
+                                read_output->avg_methylation = methylation_results.avg_methylation;
 
                                 read_pos_counter += l;
                             }
@@ -443,7 +453,7 @@ int main(int argc, char *argv[])  {
                 }
                 window_output->window_aggregate.push_back(*read_output);
                 if(window_output->motif_aggregate.find(read_output->motif) == window_output->motif_aggregate.end()) {
-                    window_output->motif_aggregate.insert({read_output->motif,1});
+                    window_output->motif_aggregate.insert(make_pair(read_output->motif,1));
                 }
                 else {
                     window_output->motif_aggregate[read_output->motif] += 1;

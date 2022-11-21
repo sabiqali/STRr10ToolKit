@@ -24,11 +24,33 @@
 #include "./htslib/htslib/faidx.h"
 #include "./htslib/htslib/hts.h"
 
-std::tuple<int, std::string> detect_size(std::string sequence_of_interest, std::string potential_str_sequence);
+struct decomposer_struct {
+    std::string potential_sequence_in_window;
+    int potential_count_in_window;
+};
 
-std::tuple<float, float, float> detect_methylation(int read_start, int read_end, bam1_t *b);
+struct sizing_struct {
+    int count;
+    std::string interruption_motif;
+};
 
-std::tuple<std::string, int> decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit);
+struct methylation_stats {
+    float max_methylation;
+    float min_methylation;
+    float avg_methylation;
+};
+
+//std::tuple<int, std::string> detect_size(std::string sequence_of_interest, std::string potential_str_sequence);
+
+//std::tuple<float, float, float> detect_methylation(int read_start, int read_end, bam1_t *b);
+
+//std::tuple<std::string, int> decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit);
+
+sizing_struct detect_size(std::string sequence_of_interest, std::string potential_str_sequence);
+
+methylation_stats detect_methylation(int read_start, int read_end, bam1_t *b);
+
+decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit);
 
 std::string dna_reverse_complement(std::string seq);
 
