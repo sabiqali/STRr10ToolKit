@@ -20,7 +20,7 @@
 #include "./htslib/htslib/hts.h"
 #include "./str_utilities.h"
 
-static const char *ALIGN_MESSAGE = 
+static const char *TOOLKIT_USAGE_MESSAGE = 
 "Usage: ./strr10toolkit [OPTIONS] --bam input.bam --reference reference_genome.fasta --output_file_name output_file_name --output_directory output_directory\n"
 "Align reads to control oligos provided.\n"
 "\n"
@@ -104,7 +104,7 @@ struct per_window_struct {
     std::map<std::string,int> motif_aggregate;
 };
 
-void parse_align_options(int argc, char** argv) {
+void parse_toolkit_options(int argc, char** argv) {
     bool die = false;
     for (char c; (c = getopt_long(argc, argv, shortopts, longopts, NULL)) != -1;) {
         std::istringstream arg(optarg != NULL ? optarg : "");
@@ -126,10 +126,10 @@ void parse_align_options(int argc, char** argv) {
             case OPT_MIN_MAP_QUALITY: arg >> opt::min_map_quality; break;
             case OPT_DISCOVERY_SENSITIVITY: arg >> opt::discovery_sensitivity; break;
             case OPT_HELP:
-                std::cout << ALIGN_MESSAGE;
+                std::cout << TOOLKIT_USAGE_MESSAGE;
                 exit(EXIT_SUCCESS);
             case OPT_VERSION:
-                std::cout << ALIGN_MESSAGE;
+                std::cout << TOOLKIT_USAGE_MESSAGE;
                 exit(EXIT_SUCCESS);
         }
     }
@@ -161,7 +161,7 @@ void parse_align_options(int argc, char** argv) {
 
     if (die)
     {
-        std::cout << "\n" << ALIGN_MESSAGE;
+        std::cout << "\n" << TOOLKIT_USAGE_MESSAGE;
         exit(EXIT_FAILURE);
     }
 }
@@ -222,7 +222,7 @@ int ref_chr_size(std::string chr_name) {
 
 int main(int argc, char *argv[])  {
 
-    parse_align_options(argc , argv);
+    parse_toolkit_options(argc , argv);
 
     //TODO::Init the bam file and get reads in window in chromosomes requested. Pass the alignments to the utilities to compute the stats
     samFile *fp = sam_open(opt::bam_file.c_str(), "r");
