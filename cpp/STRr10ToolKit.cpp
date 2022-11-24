@@ -20,7 +20,7 @@
 #include "./htslib/htslib/hts.h"
 #include "./str_utilities.h"
 
-static const char *TOOLKIT_USAGE_MESSAGE = 
+static const char *TOOLKIT_MESSAGE = 
 "Usage: ./strr10toolkit [OPTIONS] --bam input.bam --reference reference_genome.fasta --output_file_name output_file_name --output_directory output_directory\n"
 "Align reads to control oligos provided.\n"
 "\n"
@@ -37,49 +37,49 @@ static const char *TOOLKIT_USAGE_MESSAGE =
 "      --min_repeat_size=NUM            minimum length of repeat motif. Defaults to 3\n"
 "      --max_repeat_size=NUM            maximum length of repeat motif. Defaults to 6\n"
 "      --min_map_quality=NUM            minimum mapping quality of individual reads. Defaults to 20\n"
-"      --discovery_sensitivity=NU<      minimum number of repeat units in the repeat expansion to be considered, to be used with min_ins_size. Defaults to 10\n"
+"      --discovery_sensitivity=NUM      minimum number of repeat units in the repeat expansion to be considered, to be used with min_ins_size. Defaults to 10\n"
 "  -t, --threads=NUM                    use NUM threads. Defaults to 1\n";
 
 namespace opt {
     static std::string bam_file;
-    static std::string reference_file;
-    static std::string output_file_name;
+    static std::string ref_file;
+    static std::string output_file;
     static std::string output_directory;
-    static std::string chromosomes;
+    static std::string chromosome_file;
     static int min_ins_size = 50;
     static int is_phased = 0;
     static int min_read_support = 3;
-    static int clean = 0;
-    static int num_threads = 1;
+    static int clean_flag = 0 ;
     static int window_size = 5000;
     static int min_repeat_size = 3;
     static int max_repeat_size = 6;
     static int min_map_quality = 20;
-    static int discovery_sensitivity = 20;
+    static int discovery_sensitivity = 10;
+    static int num_threads = 1;
 }
 
 static const char* shortopts = "b:r:o:d:c:t";
 
-enum { OPT_HELP = 1, OPT_VERSION, OPT_CHROMOSOME , OPT_MIN_INS_SIZE, OPT_IS_PHASED, OPT_MIN_READ_SUPPORT, OPT_WINDOW_SIZE, OPT_MIN_REPEAT_SIZE, OPT_MAX_REPEAT_SIZE, OPT_MIN_MAP_QUALITY, OPT_DISCOVERY_SENSITIVITY };
+enum { OPT_HELP = 1, OPT_VERSION, OPT_CHROMOSOME_FILE, OPT_MIN_INS_SIZE, OPT_IS_PHASED, OPT_MIN_READ_SUPPORT, OPT_WINDOW_SIZE, OPT_MIN_REPEAT_SIZE, OPT_MAX_REPEAT_SIZE, OPT_MIN_MAP_QUALITY, OPT_DISCOVERY_SENSITIVITY };
 
 static const struct option longopts[] = {
-    { "bam_file",             required_argument, NULL, 'b' },
-    { "reference_file",       required_argument, NULL, 'r' },
-    { "output_file_name",     required_argument, NULL, 'o' },
-    { "output_directory",     required_argument, NULL, 'd' },
-    { "chromosomes",          required_argument, NULL, OPT_CHROMOSOME },
-    { "min_ins_size",         required_argument, NULL, OPT_MIN_INS_SIZE },
-    { "is_phased",            no_argument,       NULL, OPT_IS_PHASED },
-    { "min_read_support",     required_argument, NULL, OPT_MIN_READ_SUPPORT },
-    { "clean",                no_argument,       NULL, 'c' },
-    { "num_threads",          required_argument, NULL, 't' },
-    { "window_size",          required_argument, NULL, OPT_WINDOW_SIZE },
-    { "min_repeat_size",      required_argument, NULL, OPT_MIN_REPEAT_SIZE },
-    { "max_repeat_size",      required_argument, NULL, OPT_MAX_REPEAT_SIZE },
-    { "min_map_quality",      required_argument, NULL, OPT_MIN_MAP_QUALITY },
-    { "discovery_sensitivity",required_argument, NULL, OPT_DISCOVERY_SENSITIVITY },
-    { "help",                 no_argument,       NULL, OPT_HELP },
-    { "version",              no_argument,       NULL, OPT_VERSION },
+    { "bam_file",              required_argument, NULL, 'b' },
+    { "ref_file",              required_argument, NULL, 'r' },
+    { "output_file",           required_argument, NULL, 'o' },
+    { "output_directory",      required_argument, NULL, 'd' },
+    { "chromosome",            required_argument, NULL, OPT_CHROMOSOME_FILE },
+    { "min_ins_size",          required_argument, NULL, OPT_MIN_INS_SIZE },
+    { "is_phased",             no_argument,       NULL, OPT_IS_PHASED },
+    { "min_read_support",      required_argument, NULL, OPT_MIN_READ_SUPPORT },
+    { "clean",                 no_argument,       NULL, 'c' },
+    { "window_size",           required_argument, NULL, OPT_WINDOW_SIZE },
+    { "min_repeat_size",       required_argument, NULL, OPT_MIN_REPEAT_SIZE },
+    { "max_repeat_size",       required_argument, NULL, OPT_MAX_REPEAT_SIZE },
+    { "min_map_quality",       required_argument, NULL, OPT_MIN_MAP_QUALITY },
+    { "discovery_sensitivity", required_argument, NULL, OPT_DISCOVERY_SENSITIVITY },
+    { "threads",               required_argument, NULL, 't' },
+    { "help",                  no_argument,       NULL, OPT_HELP },
+    { "version",               no_argument,       NULL, OPT_VERSION },
     { NULL, 0, NULL, 0 }
 };
 
@@ -104,19 +104,19 @@ struct per_window_struct {
     std::map<std::string,int> motif_aggregate;
 };
 
-void parse_toolkit_options(int argc, char** argv) {
+void parse_align_options(int argc, char** argv) {
     bool die = false;
     for (char c; (c = getopt_long(argc, argv, shortopts, longopts, NULL)) != -1;) {
         std::istringstream arg(optarg != NULL ? optarg : "");
         switch (c) {
             case 'b': arg >> opt::bam_file; break;
-            case 'r': arg >> opt::reference_file; break;
-            case 'o': arg >> opt::output_file_name; break;
+            case 'r': arg >> opt::ref_file; break;
+            case 'o': arg >> opt::output_file; break;
             case 'd': arg >> opt::output_directory; break;
             case '?': die = true; break;
             case 't': arg >> opt::num_threads; break;
-            case 'c': opt::clean = 1; break;
-            case OPT_CHROMOSOME: arg >> opt::chromosomes; break;
+            case 'c': opt::clean_flag = 1; break;
+            case OPT_CHROMOSOME_FILE: arg >> opt::chromosome_file; break;
             case OPT_MIN_INS_SIZE: arg >> opt::min_ins_size; break;
             case OPT_IS_PHASED: opt::is_phased = 1; break;
             case OPT_MIN_READ_SUPPORT: arg >> opt::min_read_support; break;
@@ -126,42 +126,45 @@ void parse_toolkit_options(int argc, char** argv) {
             case OPT_MIN_MAP_QUALITY: arg >> opt::min_map_quality; break;
             case OPT_DISCOVERY_SENSITIVITY: arg >> opt::discovery_sensitivity; break;
             case OPT_HELP:
-                std::cout << TOOLKIT_USAGE_MESSAGE;
+                std::cout << TOOLKIT_MESSAGE;
                 exit(EXIT_SUCCESS);
             case OPT_VERSION:
-                std::cout << TOOLKIT_USAGE_MESSAGE;
+                std::cout << TOOLKIT_MESSAGE;
                 exit(EXIT_SUCCESS);
         }
     }
 
+    /*if(argc - optind > 0) {
+        opt::region = argv[optind++];
+    }
+    if (argc - optind > 0) {
+        std::cerr << SUBPROGRAM ": too many arguments\n";
+        die = true;
+    }*/
+
     if(opt::num_threads <= 0) {
-        std::cerr << "STRr10ToolKit : invalid number of threads: " << opt::num_threads << "\n";
+        std::cerr << "Align : invalid number of threads: " << opt::num_threads << "\n";
         die = true;
     }
 
     if(opt::bam_file.empty()) {
-        std::cerr << "STRr10ToolKit : an input bam file must be provided\n";
+        std::cerr << "Align: a --control file must be provided\n";
         die = true;
     }
 
-    if(opt::reference_file.empty()) {
-        std::cerr << "STRr10ToolKit : a reference must be provided\n";
+    if(opt::ref_file.empty()) {
+        std::cerr << "Align: a --reads file must be provided\n";
         die = true;
     }
 
-    if(opt::chromosomes.empty()) {
-        std::cerr << "STRr10ToolKit : the chromosomes must be specified\n";
-        die = true;
-    }
-
-    if(opt::output_file_name.empty() || opt::output_directory.empty()) {
-        std::cerr << "STRr10ToolKit : an output file and directory must be provided\n";
+    if(opt::output_file.empty() && opt::output_directory.empty()) {
+        std::cerr << "Align: a --spacer file must be provided\n";
         die = true;
     }
 
     if (die)
     {
-        std::cout << "\n" << TOOLKIT_USAGE_MESSAGE;
+        std::cout << "\n" << TOOLKIT_MESSAGE;
         exit(EXIT_FAILURE);
     }
 }
@@ -221,8 +224,8 @@ int ref_chr_size(std::string chr_name) {
 }
 
 int main(int argc, char *argv[])  {
-
-    parse_toolkit_options(argc , argv);
+    
+    parse_align_options(argc , argv);
 
     //TODO::Init the bam file and get reads in window in chromosomes requested. Pass the alignments to the utilities to compute the stats
     samFile *fp = sam_open(opt::bam_file.c_str(), "r");
