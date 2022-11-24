@@ -224,7 +224,7 @@ int ref_chr_size(std::string chr_name) {
 }
 
 int main(int argc, char *argv[])  {
-    
+
     parse_align_options(argc , argv);
 
     //TODO::Init the bam file and get reads in window in chromosomes requested. Pass the alignments to the utilities to compute the stats
@@ -235,7 +235,7 @@ int main(int argc, char *argv[])  {
     bam1_t *b = bam_init1();
 
     //get the chr list from file
-    std::ifstream chr_file(opt::chromosomes);
+    std::ifstream chr_file(opt::chromosome_file);
     std::string chr_list_line; 
     std::string token;
     std::vector<std::string> chr_list;
