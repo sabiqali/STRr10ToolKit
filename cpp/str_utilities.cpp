@@ -21,47 +21,39 @@ std::string dna_reverse_complement(std::string seq) {
     return seq;
 }
 
-/*std::vector<size_t> get_all_found_pos(std::string to_search_in, std::string to_search_for) {
-    std::vector<size_t> positions; // holds all the positions that sub occurs within str
-
-    size_t pos = str.find(sub, 0);
-    while(pos != string::npos)
-    {
-        positions.push_back(pos);
-        pos = str.find(sub,pos+1);
-    }
-
-    return positions;
-}*/
-
 sizing_struct detect_size(std::string sequence_of_interest, std::string potential_str_sequence) {
     int rindex = 0;
     int lindex = 0;
 
     int motif_length = potential_str_sequence.length();
-    sizing_struct* output_variable = new sizing_struct();
+    int count = 0;
+    std::string int_motif;
 
-    while ((rindex = sequence_of_interest.find(potential_str_sequence, rindex)) != std::string::npos) {
-        std::cout << rindex << std::endl;
-        if(rindex - lindex == motif_length) {
-            output_variable->count++;
+    while ((rindex = sequence_of_interest.find(potential_str_sequence, rindex)) != std::string::npos) { //could implement KMP algorithm here to get indeces in O(m)
+        if(lindex == 0) {
+            lindex = rindex;
+            ++rindex;
+            continue;
+        }
+        if((rindex - lindex) == motif_length) {
+            count++;
         }
         else {
-            output_variable->interruption_motif = potential_str_sequence.substr(lindex,rindex);
+            int_motif = sequence_of_interest.substr(lindex+motif_length,rindex-(lindex+motif_length)); //the addition in first parameter is to get past the existing motif at the left index, to the start of the interruption. 
+            count++;
         }
 
         lindex = rindex;
-        rindex += motif_length;
+        ++rindex;
     }
 
-    sizing_struct return_variable = {output_variable->count,output_variable->interruption_motif};
+    sizing_struct return_variable = {count+1,int_motif}; //the +1 compensates for the initial skipped find
 
     return return_variable;
-    //return std::make_tuple(output_variable->count,output_variable->interruption_motif);
 }
 
-methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b) { //pass bam record here
-    
+//methylation_stats detect_methylation(int region_start, int region_end, std::string mm_string, std::string prob_array) { //pass bam record here
+methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b) { //pass bam record here    
     float min_methylation = 0;
     float max_methylation = 0;
     float avg_methylation = 0;
@@ -71,6 +63,9 @@ methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b
     
     char *mm_str = bam_aux2Z(bam_aux_get(b, "MM"));
     char *probability_array = bam_aux2Z(bam_aux_get(b, "ML"));
+
+    //char *mm_str = const_cast<char*>(mm_string.c_str());
+    //char *probability_array = const_cast<char*>(prob_array.c_str());
 
     std::string tmp_mm1(mm_str);
     std::string tmp_prob(probability_array);
@@ -88,12 +83,14 @@ methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b
 
     std::string token;
 
-    std::stringstream tmp_mm_str(mm_str);
+    tmp_mm1 = tmp_mm1.substr(0, tmp_mm1.find(';'));
+
+    std::stringstream tmp_mm_str(tmp_mm1);
     while (getline(tmp_mm_str, token, ',')){
         positions.push_back(token);
     }
 
-    std::stringstream tmp_probability_array(probability_array);
+    std::stringstream tmp_probability_array(tmp_prob);
     while (getline(tmp_probability_array, token, ',')){
         probabilites.push_back(token);
     }
@@ -138,81 +135,7 @@ methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b
     methylation_stats return_variable = {max_methylation,min_methylation,avg_methylation};
 
     return return_variable;
-
-    //return std::make_tuple(min_methylation,max_methylation,avg_methylation);
 }
-
-/*std::tuple<*methylation_stats, *methylation_stats, *methylation_stats> detect_methylation_all_regions(int read_start, int read_end, bam1_t *b) { //pass bam record here
-    
-    float min_methylation = 0;
-    float max_methylation = 0;
-    float avg_methylation = 0;
-    float total_methylation = 0;
-
-    int read_pos_count = 0;
-    
-    char *mm_str = bam_aux2Z(bam_aux_get_core(b, "MM"));
-    char *probability_array = bam_aux2Z(bam_aux_get_core(b, "ML"));
-
-    //Multiple mods are not supported as of now
-    if(std::count(mm_str.begin(),mm_str.end(),';') > 1) {
-        return {0,0,0};
-    }
-
-    std::vector<std::string> positions;
-    std::vector<std::string> probabilites;
-
-    std::string token;
-
-    std::stringstream tmp_mm_str(mm_str);
-    while (getline(tmp_mm_str, token, ',')){
-        positions.push_back(token);
-    }
-
-    std::stringstream tmp_probability_array(probability_array);
-    while (getline(tmp_probability_array, token, ',')){
-        probabilites.push_back(token);
-    }
-
-    std::vector<std::string>::iterator mm_iterator = positions.begin();
-    std::advance(mm_iterator, 1);
-
-    std::vector<std::string>::iterator ml_iterator = probabilites.begin();
-    std::advance(ml_iterator, 1);
-
-    while (mm_iterator != positions.end())
-    {
-        int position_of_mod = std::stoi(*mm_iterator);
-        float probability_of_mod = std::stof(*ml_iterator)/(float)255;
-
-        read_pos_count += position_of_mod + 1;
-
-        if read_pos_count >= read_start && read_pos_count <= read_end {
-            if probability_of_mod > max_methylation {
-                max_methylation = methylation_base_probability;
-            }
-            if probability_of_mod < min_methylation {
-                min_methylation = methylation_base_probability;
-            }
-            total_methylation += probability_of_mod;
-        }
-
-        ++mm_iterator;
-        ++ml_iterator;
-    }
-
-    if read_pos_count > read_end {
-        avg_methylation = total_methylation / (float)(read_end - read_start);
-    }
-    else if read_pos_count < read_end && read_pos_count > read_start {
-        avg_methylation = total_methylation / (float)(read_pos_count - read_start);
-    }
-    else if read_pos_count < read_start {
-        avg_methylation = 0;
-    }
-
-    return {min_methylation,max_methylation,avg_methylation};
-}*/
 
 decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
 
@@ -223,7 +146,7 @@ decomposer_struct decompose_string(std::string sequence_of_interest, int lower_l
         int upper_window_var = motif_length;
 
         while(upper_window_var <= sequence_of_interest.length()) {
-            std::string sequence_in_window = sequence_of_interest.substr(lower_window_var,upper_window_var);
+            std::string sequence_in_window = sequence_of_interest.substr(lower_window_var,motif_length);
 
             if (subsequences.find(sequence_in_window) == subsequences.end()) {
                 subsequences.insert(make_pair(sequence_in_window, 1));
@@ -231,6 +154,9 @@ decomposer_struct decompose_string(std::string sequence_of_interest, int lower_l
             else {
                 subsequences[sequence_in_window]+=1;
             }
+
+            lower_window_var++;
+            upper_window_var++;
         }
     }
 
@@ -247,6 +173,4 @@ decomposer_struct decompose_string(std::string sequence_of_interest, int lower_l
     decomposer_struct return_variable = {max_key,max_value};
 
     return return_variable;
-
-    //return std::make_tuple(max_key,max_value);
 }
