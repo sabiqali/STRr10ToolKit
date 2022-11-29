@@ -161,7 +161,7 @@ void parse_align_options2(int argc, char** argv) {
         die = true;
     }
 
-    if(opt::verbode && opt::output_file.empty() && opt::output_directory.empty()) {
+    if(opt::verbose && opt::output_file.empty() && opt::output_directory.empty()) {
         std::cerr << "strtoolkit: the output file name and the directory has to be provided for a verbose output\n";
         die = true;
     }
@@ -229,11 +229,8 @@ int ref_chr_size(std::string chr_name) {
 
 int main(int argc, char *argv[])  {
 
-    std::cout<<"test";
-
     parse_align_options2(argc , argv);
 
-    std::cout<<"test2";
     //TODO::Init the bam file and get reads in window in chromosomes requested. Pass the alignments to the utilities to compute the stats
     samFile *fp = sam_open(opt::bam_file.c_str(), "r");
     std::string bai_file = opt::bam_file + ".bai";
