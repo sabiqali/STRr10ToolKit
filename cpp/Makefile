@@ -2,7 +2,7 @@ LIBS = -fopenmp -ftree-vectorize -lz -lm -llzma -lbz2 -lz -lhts
 
 DEPS = str_utilities.h
 
-CC=gcc
+CC=g++
 
 OBJ = str_utilities.o strtoolkit.o 
 
