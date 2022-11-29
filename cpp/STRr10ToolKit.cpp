@@ -14,11 +14,11 @@
 #include <sstream>
 #include <getopt.h>
 //#include "./htslib/bam.h"
-#include "./htslib/htslib/vcf.h"
-#include "./htslib/htslib/sam.h"
-#include "./htslib/htslib/faidx.h"
-#include "./htslib/htslib/hts.h"
-#include "./str_utilities.h"
+#include "htslib/htslib/vcf.h"
+#include "htslib/htslib/sam.h"
+#include "htslib/htslib/faidx.h"
+#include "htslib/htslib/hts.h"
+#include "str_utilities.h"
 
 static const char *TOOLKIT_MESSAGE = 
 "Usage: ./strr10toolkit [OPTIONS] --bam input.bam --reference reference_genome.fasta --output_file_name output_file_name --output_directory output_directory\n"
@@ -104,7 +104,7 @@ struct per_window_struct {
     std::map<std::string,int> motif_aggregate;
 };
 
-void parse_align_options(int argc, char** argv) {
+void parse_align_options2(int argc, char** argv) {
     bool die = false;
     for (char c; (c = getopt_long(argc, argv, shortopts, longopts, NULL)) != -1;) {
         std::istringstream arg(optarg != NULL ? optarg : "");
@@ -225,8 +225,11 @@ int ref_chr_size(std::string chr_name) {
 
 int main(int argc, char *argv[])  {
 
-    parse_align_options(argc , argv);
+    std::cout<<"test";
 
+    parse_align_options2(argc , argv);
+
+    std::cout<<"test2";
     //TODO::Init the bam file and get reads in window in chromosomes requested. Pass the alignments to the utilities to compute the stats
     samFile *fp = sam_open(opt::bam_file.c_str(), "r");
     std::string bai_file = opt::bam_file + ".bai";
