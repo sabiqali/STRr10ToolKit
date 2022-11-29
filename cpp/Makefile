@@ -1,10 +1,10 @@
-LIBS = -lz -lm -llzma -lbz2 -lpthread -lcurl -lz -lhts -ftree-vectorize
+LIBS = -fopenmp -ftree-vectorize -lz -lm -llzma -lbz2 -lz -lhts
 
 DEPS = str_utilities.h
 
 CC=gcc
 
-OBJ = str_utilities.o STRr10ToolKit.o 
+OBJ = str_utilities.o strtoolkit.o 
 
 HTS?=install
 
@@ -26,6 +26,6 @@ endif
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(HTS_INCLUDE) $(LIBS)
 
-STRr10ToolKit: $(OBJ)
-	$(CC) -shared -g -Wall -Wextra -std=c++17 -fPIC -o $@ $^ $(HTS_INCLUDE) $(LIBS) $(CFLAGS)
+strtoolkit: $(OBJ)
+	$(CC) -g -Wall -Wextra -std=c++17 -O2 -o $@ $^ $(HTS_INCLUDE) $(LIBS) $(CFLAGS)
 
