@@ -21,24 +21,25 @@
 #include "str_utilities.h"
 
 static const char *TOOLKIT_MESSAGE = 
-"Usage: ./strr10toolkit [OPTIONS] --bam input.bam --reference reference_genome.fasta --output_file_name output_file_name --output_directory output_directory\n"
-"Align reads to control oligos provided.\n"
+"Usage: ./strr10toolkit [OPTIONS] --bam input.bam --reference reference_genome.fasta --output_file_name output_file_name.tsv --output_directory /path/to/output/directory\n"
+"Toolkit to detect and analyse STR loci\n"
 "\n"
 "  -b, --bam=FILE                       the input bam file\n"
 "  -r, --reference=FILE                 the reference genome\n"
 "  -o, --output_file_name=FILE          the output file name without extension\n"
 "  -d, --output_directory=PATH          the directory where all output files will be generated\n"
-"      --min_ins_size=NUM               the minimum number of bases in the insert to call as an STR. Default Minimum is 50bp.\n"
+"      --min_ins_size=NUM               the minimum number of bases in the insert event to call as an STR.(Default: 50bp)\n"
 "      --is_phased                      is phasing data present in the bam?\n"
-"      --min_read_support=NUM           the minimum number of reads that support the insert call. Minimum is set at 3 by default.\n"
+"  -v, --verbose                        will output the data from intermediate steps. Requires output_file_name and output_directory to be set, if used. will print to stdout if not set\n"
+"      --min_read_support=NUM           the minimum number of reads that support the insert call.(Default: 3)\n"
 "      --chromosomes=FILE               the chromosomes to be searched for STRs. Alternatively, you can provide a list of chromosomes in text file separated by a whitespace\n"
 "  -c, --clean                          cleanup any intermediate files\n"
-"      --window_size=NUM                the size of the search window. Defaults to 5000bp\n"
-"      --min_repeat_size=NUM            minimum length of repeat motif. Defaults to 3\n"
-"      --max_repeat_size=NUM            maximum length of repeat motif. Defaults to 6\n"
-"      --min_map_quality=NUM            minimum mapping quality of individual reads. Defaults to 20\n"
-"      --discovery_sensitivity=NUM      minimum number of repeat units in the repeat expansion to be considered, to be used with min_ins_size. Defaults to 10\n"
-"  -t, --threads=NUM                    use NUM threads. Defaults to 1\n";
+"      --window_size=NUM                the size of the search window.(Default: 5000bp)\n"
+"      --min_repeat_size=NUM            minimum length of repeat motif.(Default: 3)\n"
+"      --max_repeat_size=NUM            maximum length of repeat motif. (Default: 6)\n"
+"      --min_map_quality=NUM            minimum mapping quality of individual reads.(Default: 20)\n"
+"      --discovery_sensitivity=NUM      minimum number of repeat units in the repeat expansion to be considered, to be used with min_ins_size.(Default: 10)\n"
+"  -t, --threads=NUM                    use NUM threads.(Default: 1)\n";
 
 namespace opt {
     static std::string bam_file;
@@ -48,6 +49,7 @@ namespace opt {
     static std::string chromosome_file;
     static int min_ins_size = 50;
     static int is_phased = 0;
+    static int verbose = 0;
     static int min_read_support = 3;
     static int clean_flag = 0 ;
     static int window_size = 5000;
@@ -58,7 +60,7 @@ namespace opt {
     static int num_threads = 1;
 }
 
-static const char* shortopts = "b:r:o:d:c:t";
+static const char* shortopts = "b:r:o:d:v:c:t";
 
 enum { OPT_HELP = 1, OPT_VERSION, OPT_CHROMOSOME_FILE, OPT_MIN_INS_SIZE, OPT_IS_PHASED, OPT_MIN_READ_SUPPORT, OPT_WINDOW_SIZE, OPT_MIN_REPEAT_SIZE, OPT_MAX_REPEAT_SIZE, OPT_MIN_MAP_QUALITY, OPT_DISCOVERY_SENSITIVITY };
 
@@ -70,6 +72,7 @@ static const struct option longopts[] = {
     { "chromosome",            required_argument, NULL, OPT_CHROMOSOME_FILE },
     { "min_ins_size",          required_argument, NULL, OPT_MIN_INS_SIZE },
     { "is_phased",             no_argument,       NULL, OPT_IS_PHASED },
+    { "verbose",               no_argument,       NULL, 'v' },
     { "min_read_support",      required_argument, NULL, OPT_MIN_READ_SUPPORT },
     { "clean",                 no_argument,       NULL, 'c' },
     { "window_size",           required_argument, NULL, OPT_WINDOW_SIZE },
@@ -116,6 +119,7 @@ void parse_align_options2(int argc, char** argv) {
             case '?': die = true; break;
             case 't': arg >> opt::num_threads; break;
             case 'c': opt::clean_flag = 1; break;
+	    case 'v': opt::verbose = 1; break;
             case OPT_CHROMOSOME_FILE: arg >> opt::chromosome_file; break;
             case OPT_MIN_INS_SIZE: arg >> opt::min_ins_size; break;
             case OPT_IS_PHASED: opt::is_phased = 1; break;
@@ -143,22 +147,22 @@ void parse_align_options2(int argc, char** argv) {
     }*/
 
     if(opt::num_threads <= 0) {
-        std::cerr << "Align : invalid number of threads: " << opt::num_threads << "\n";
+        std::cerr << "strtoolkit : invalid number of threads: " << opt::num_threads << "\n";
         die = true;
     }
 
     if(opt::bam_file.empty()) {
-        std::cerr << "Align: a --control file must be provided\n";
+        std::cerr << "strtoolkit: a --bam file must be provided\n";
         die = true;
     }
 
     if(opt::ref_file.empty()) {
-        std::cerr << "Align: a --reads file must be provided\n";
+        std::cerr << "strtoolkit: a --ref file must be provided\n";
         die = true;
     }
 
-    if(opt::output_file.empty() && opt::output_directory.empty()) {
-        std::cerr << "Align: a --spacer file must be provided\n";
+    if(opt::verbode && opt::output_file.empty() && opt::output_directory.empty()) {
+        std::cerr << "strtoolkit: the output file name and the directory has to be provided for a verbose output\n";
         die = true;
     }
 
