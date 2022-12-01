@@ -276,12 +276,11 @@ int main(int argc, char *argv[])  {
                 std::string query_sequence;
 
                 for(int i=0;i<b->core.l_qseq;i++){
-                    query_sequence += bam_seqi(bam_get_seq(b), i);
-                    //std::cout<<bam_seqi(bam_get_seq(b), i);
+                    query_sequence += seq_nt16_str[bam_seqi(bam_get_seq(b), i)];
                 }
 
-		        //std::cout<<query_sequence<<std::endl;
-                std::cout<<b->core.qual<<std::endl;
+		        std::cout<<query_sequence<<std::endl;
+                std::cout<<"qual:"<<int(b->core.qual)<<std::endl;
                 break;
 
                 auto ref_start_pos = b->core.pos;
