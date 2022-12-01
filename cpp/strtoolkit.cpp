@@ -371,10 +371,11 @@ int main(int argc, char *argv[])  {
                                 read_pos_counter += l;
                             }
                             else {
-                                std::cout<<"inside insert large insert"<<l<<std::endl;
-                                break;
                                 //call functions here
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
+
+                                std::cout<<sequence_of_interest<<std::endl;
+                                break;
 
                                 sizing_struct sizing_result;
                                 decomposer_struct decomposer_result;
