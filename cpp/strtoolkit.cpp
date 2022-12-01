@@ -311,10 +311,12 @@ int main(int argc, char *argv[])  {
                                 read_pos_counter += l;
                             }
                             else {
-                                std::cout<<"inside soft clip large insert"<<l<<std::endl;
-                                break;
                                 //call functions here
+                                std::cout<<b->core.l_qseq<<" "<<read_pos_counter<<" "<<l<<std::endl;
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
+
+                                std::cout<<"softclip: "<<sequence_of_interest<<std::endl;
+                                break;
 
                                 sizing_struct sizing_result;
                                 decomposer_struct decomposer_result;
@@ -372,9 +374,10 @@ int main(int argc, char *argv[])  {
                             }
                             else {
                                 //call functions here
+                                std::cout<<b->core.l_qseq<<" "<<read_pos_counter<<" "<<l<<std::endl;
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
 
-                                std::cout<<sequence_of_interest<<std::endl;
+                                std::cout<<"insert: "<<sequence_of_interest<<std::endl;
                                 break;
 
                                 sizing_struct sizing_result;
@@ -427,10 +430,12 @@ int main(int argc, char *argv[])  {
                                 read_pos_counter += l;
                             }
                             else {
-                                std::cout<<"inside ref skip large insert"<<l<<std::endl;
-                                break;
                                 //call functions here
+                                std::cout<<b->core.l_qseq<<" "<<read_pos_counter<<" "<<l<<std::endl;
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
+
+                                std::cout<<"refskip: "<<sequence_of_interest<<std::endl;
+                                break;
 
                                 sizing_struct sizing_result;
                                 decomposer_struct decomposer_result;
