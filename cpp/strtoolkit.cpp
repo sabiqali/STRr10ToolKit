@@ -258,7 +258,8 @@ int main(int argc, char *argv[])  {
             per_window_struct* window_output = new per_window_struct();
 
             std::string region = chr+":"+std::to_string(lower_limit)+"-"+std::to_string(upper_limit);
-            //generates iterator over region
+
+	    //generates iterator over region
             hts_itr_t *itr = sam_itr_querys(idx, h, region.c_str());
             /* or do i use this?:
             int bam_fetch(bamFile fp, const bam_index_t *idx, int tid, int beg, int end, void *data, bam_fetch_f func);
@@ -277,6 +278,9 @@ int main(int argc, char *argv[])  {
                 for(int i=0;i<b->core.l_qseq;i++){
                     query_sequence += bam_seqi(bam_get_seq(b), i);
                 }
+
+		std::cout<<query_sequence<<std::endl;
+		break;
 
                 auto ref_start_pos = b->core.pos;
 
@@ -481,6 +485,8 @@ int main(int argc, char *argv[])  {
                 }
                 //otherwise, there aren't any STRs that pass all the filters. moving to the next window
             }
+	    lower_limit = upper_limit;
+	    upper_limit += opt::window_size;
             hts_itr_destroy(itr);
         }
     }
