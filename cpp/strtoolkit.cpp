@@ -378,8 +378,8 @@ int main(int argc, char *argv[])  {
                             }
                             else {
                                 //call functions here
-                                std::cout<<query_sequence<<std::endl;
-                                std::cout<<b->core.l_qseq<<" "<<read_pos_counter<<" "<<l<<std::endl;
+                                //std::cout<<query_sequence<<std::endl;
+                                //std::cout<<b->core.l_qseq<<" "<<read_pos_counter<<" "<<l<<std::endl;
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
 
                                 std::cout<<"insert: "<<sequence_of_interest<<std::endl;
