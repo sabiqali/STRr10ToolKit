@@ -274,14 +274,11 @@ int main(int argc, char *argv[])  {
                 int ref_pos_counter = 0;
                 auto query_sequence_encoded = bam_get_seq(b);
                 std::string query_sequence;
+                int map_quality = int(b->core.qual);
 
                 for(int i=0;i<b->core.l_qseq;i++){
                     query_sequence += seq_nt16_str[bam_seqi(bam_get_seq(b), i)];
                 }
-
-		        std::cout<<query_sequence<<std::endl;
-                std::cout<<"qual:"<<int(b->core.qual)<<std::endl;
-                break;
 
                 auto ref_start_pos = b->core.pos;
 
@@ -295,6 +292,8 @@ int main(int argc, char *argv[])  {
                 for (k = 0, x = b->core.pos; k < b->core.n_cigar; ++k) {
                     int op = cigar[k]&16;
                     int l = cigar[k]>>4;
+                    std::cout<<"op:"<<op<<"\tl:"<<l<<std::endl;
+                    break;
                     switch(op) {
                         case BAM_CMATCH:
                             //printf("M");
