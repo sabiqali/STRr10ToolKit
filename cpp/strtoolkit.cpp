@@ -290,15 +290,16 @@ int main(int argc, char *argv[])  {
                 int x, j, k;
                 uint32_t *cigar = bam_get_cigar(b);
                 for (k = 0; k < b->core.n_cigar; ++k) {
-                    //int op = cigar[k]&16;
-                    //int l = cigar[k]>>4;
+                    //int op = cigar[k]&16;       //old style htslib
+                    //int l = cigar[k]>>4;        //old style htslib
                     int op = bam_cigar_op(cigar[k]);
                     int l = bam_cigar_oplen(cigar[k]);
-                    std::cout<<"op:"<<op<<"\tl:"<<l<<std::endl;
                     break;
                     switch(op) {
                         case BAM_CMATCH:
                             //printf("M");
+                            std::cout<<"inside match"<<std::endl;
+                            break;
                             read_pos_counter += l;
                             ref_pos_counter += l;
                             break;
@@ -309,8 +310,12 @@ int main(int argc, char *argv[])  {
                             //printf("S");
                             if(l<opt::min_ins_size){
                                 read_pos_counter += l;
+                                std::cout<<"inside soft clip small insert"<<std::endl;
+                                break;
                             }
                             else {
+                                std::cout<<"inside soft clip large insert"<<std::endl;
+                                break;
                                 //call functions here
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
 
@@ -367,8 +372,12 @@ int main(int argc, char *argv[])  {
                             //printf("I");
                             if(l<opt::min_ins_size){
                                 read_pos_counter += l;
+                                std::cout<<"inside insert small insert"<<std::endl;
+                                break;
                             }
                             else {
+                                std::cout<<"inside insert large insert"<<std::endl;
+                                break;
                                 //call functions here
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
 
@@ -420,8 +429,12 @@ int main(int argc, char *argv[])  {
                             //printf("S");
                             if(l<opt::min_ins_size){
                                 read_pos_counter += l;
+                                std::cout<<"inside ref skip small insert"<<std::endl;
+                                break;
                             }
                             else {
+                                std::cout<<"inside ref skip large insert"<<std::endl;
+                                break;
                                 //call functions here
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
 
