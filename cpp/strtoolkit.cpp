@@ -275,12 +275,14 @@ int main(int argc, char *argv[])  {
                 int read_pos_counter = 0;
                 int ref_pos_counter = 0;
                 auto query_sequence_encoded = bam_get_seq(b);
-                std::string query_sequence;
+                std::string query_sequence = "";
                 int map_quality = int(b->core.qual);
 
                 for(int i=0;i<b->core.l_qseq;i++){
                     query_sequence += seq_nt16_str[bam_seqi(bam_get_seq(b), i)];
                 }
+
+                std::cout<<query_sequence<<std::endl;
 
                 auto ref_start_pos = b->core.pos;
 
@@ -312,6 +314,7 @@ int main(int argc, char *argv[])  {
                             }
                             else {
                                 //call functions here
+                                std::cout<<query_sequence<<std::endl;
                                 std::cout<<b->core.l_qseq<<" "<<read_pos_counter<<" "<<l<<std::endl;
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
 
@@ -374,6 +377,7 @@ int main(int argc, char *argv[])  {
                             }
                             else {
                                 //call functions here
+                                std::cout<<query_sequence<<std::endl;
                                 std::cout<<b->core.l_qseq<<" "<<read_pos_counter<<" "<<l<<std::endl;
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
 
@@ -431,6 +435,7 @@ int main(int argc, char *argv[])  {
                             }
                             else {
                                 //call functions here
+                                std::cout<<query_sequence<<std::endl;
                                 std::cout<<b->core.l_qseq<<" "<<read_pos_counter<<" "<<l<<std::endl;
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
 
