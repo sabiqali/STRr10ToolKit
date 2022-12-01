@@ -259,6 +259,8 @@ int main(int argc, char *argv[])  {
 
             std::string region = chr+":"+std::to_string(lower_limit)+"-"+std::to_string(upper_limit);
 
+            std::cout<<region<<std::endl;
+
 	        //generates iterator over region
             hts_itr_t *itr = sam_itr_querys(idx, h, region.c_str());
             /* or do i use this?:
@@ -294,12 +296,9 @@ int main(int argc, char *argv[])  {
                     //int l = cigar[k]>>4;        //old style htslib
                     int op = bam_cigar_op(cigar[k]);
                     int l = bam_cigar_oplen(cigar[k]);
-                    std::cout<<bam_get_qname(b)<<" op:"<<op<<"\tl:"<<l<<std::endl;
                     switch(op) {
                         case BAM_CMATCH:
                             //printf("M");
-                            std::cout<<"inside match"<<std::endl;
-                            break;
                             read_pos_counter += l;
                             ref_pos_counter += l;
                             break;
@@ -310,8 +309,6 @@ int main(int argc, char *argv[])  {
                             //printf("S");
                             if(l<opt::min_ins_size){
                                 read_pos_counter += l;
-                                std::cout<<"inside soft clip small insert"<<l<<std::endl;
-                                break;
                             }
                             else {
                                 std::cout<<"inside soft clip large insert"<<l<<std::endl;
@@ -372,8 +369,6 @@ int main(int argc, char *argv[])  {
                             //printf("I");
                             if(l<opt::min_ins_size){
                                 read_pos_counter += l;
-                                std::cout<<"inside insert small insert"<<l<<std::endl;
-                                break;
                             }
                             else {
                                 std::cout<<"inside insert large insert"<<l<<std::endl;
@@ -429,8 +424,6 @@ int main(int argc, char *argv[])  {
                             //printf("S");
                             if(l<opt::min_ins_size){
                                 read_pos_counter += l;
-                                std::cout<<"inside ref skip small insert"<<l<<std::endl;
-                                break;
                             }
                             else {
                                 std::cout<<"inside ref skip large insert"<<l<<std::endl;
