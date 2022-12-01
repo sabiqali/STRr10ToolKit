@@ -277,15 +277,16 @@ int main(int argc, char *argv[])  {
 
                 for(int i=0;i<b->core.l_qseq;i++){
                     query_sequence += bam_seqi(bam_get_seq(b), i);
-                    std::cout<<bam_seqi(bam_get_seq(b), i);
+                    //std::cout<<bam_seqi(bam_get_seq(b), i);
                 }
 
-		        std::cout<<query_sequence<<std::endl;
-		        break;
+		        //std::cout<<query_sequence<<std::endl;
+                std::cout<<b->core.qual<<std::endl;
+                break;
 
                 auto ref_start_pos = b->core.pos;
 
-                std::cout<<ref_start_pos<<std::endl;
+                //std::cout<<ref_start_pos<<std::endl;
 
                 /*printf("%s\t%d\t%d\n", h->target_name[b->core.tid], b->core.pos,
                 b->core.pos + bam_cigar2rlen(b->core.n_cigar, bam_get_cigar(b)));*/
