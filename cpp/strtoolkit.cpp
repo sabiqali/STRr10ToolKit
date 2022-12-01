@@ -294,6 +294,7 @@ int main(int argc, char *argv[])  {
                     //int l = cigar[k]>>4;        //old style htslib
                     int op = bam_cigar_op(cigar[k]);
                     int l = bam_cigar_oplen(cigar[k]);
+                    std::cout<<bam_get_qname(b)<<" op:"<<op<<"\tl:"<<l<<std::endl;
                     switch(op) {
                         case BAM_CMATCH:
                             //printf("M");
