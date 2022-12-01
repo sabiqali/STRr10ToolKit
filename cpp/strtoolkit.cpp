@@ -309,11 +309,11 @@ int main(int argc, char *argv[])  {
                             //printf("S");
                             if(l<opt::min_ins_size){
                                 read_pos_counter += l;
-                                std::cout<<"inside soft clip small insert"<<std::endl;
+                                std::cout<<"inside soft clip small insert"<<l<<std::endl;
                                 break;
                             }
                             else {
-                                std::cout<<"inside soft clip large insert"<<std::endl;
+                                std::cout<<"inside soft clip large insert"<<l<<std::endl;
                                 break;
                                 //call functions here
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
@@ -371,11 +371,11 @@ int main(int argc, char *argv[])  {
                             //printf("I");
                             if(l<opt::min_ins_size){
                                 read_pos_counter += l;
-                                std::cout<<"inside insert small insert"<<std::endl;
+                                std::cout<<"inside insert small insert"<<l<<std::endl;
                                 break;
                             }
                             else {
-                                std::cout<<"inside insert large insert"<<std::endl;
+                                std::cout<<"inside insert large insert"<<l<<std::endl;
                                 break;
                                 //call functions here
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
@@ -428,11 +428,11 @@ int main(int argc, char *argv[])  {
                             //printf("S");
                             if(l<opt::min_ins_size){
                                 read_pos_counter += l;
-                                std::cout<<"inside ref skip small insert"<<std::endl;
+                                std::cout<<"inside ref skip small insert"<<l<<std::endl;
                                 break;
                             }
                             else {
-                                std::cout<<"inside ref skip large insert"<<std::endl;
+                                std::cout<<"inside ref skip large insert"<<l<<std::endl;
                                 break;
                                 //call functions here
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
