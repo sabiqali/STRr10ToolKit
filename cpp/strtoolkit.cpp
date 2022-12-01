@@ -289,9 +289,11 @@ int main(int argc, char *argv[])  {
                 //bam handling derived from: https://www.biostars.org/p/4211/
                 int x, j, k;
                 uint32_t *cigar = bam_get_cigar(b);
-                for (k = 0, x = b->core.pos; k < b->core.n_cigar; ++k) {
-                    int op = cigar[k]&16;
-                    int l = cigar[k]>>4;
+                for (k = 0; k < b->core.n_cigar; ++k) {
+                    //int op = cigar[k]&16;
+                    //int l = cigar[k]>>4;
+                    int op = bam_cigar_op(cigar[k]);
+                    int l = bam_cigar_oplen(cigar[k]);
                     std::cout<<"op:"<<op<<"\tl:"<<l<<std::endl;
                     break;
                     switch(op) {
