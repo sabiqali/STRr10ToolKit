@@ -278,11 +278,15 @@ int main(int argc, char *argv[])  {
                 std::string query_sequence = "";
                 int map_quality = int(b->core.qual);
 
+                if(map_quality < opt::min_map_quality) {
+                    continue;
+                }
+
                 for(int i=0;i<b->core.l_qseq;i++){
                     query_sequence += seq_nt16_str[bam_seqi(bam_get_seq(b), i)];
                 }
 
-                std::cout<<query_sequence<<std::endl;
+                //std::cout<<query_sequence<<std::endl;
 
                 auto ref_start_pos = b->core.pos;
 
@@ -383,12 +387,13 @@ int main(int argc, char *argv[])  {
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
 
                                 std::cout<<"insert: "<<sequence_of_interest<<std::endl;
+                                break;
 
                                 sizing_struct sizing_result;
                                 decomposer_struct decomposer_result;
                                 methylation_stats methylation_results;
 
-                                /*decomposer_result = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
+                                decomposer_result = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
 
                                 sizing_result = detect_size(sequence_of_interest,decomposer_result.potential_sequence_in_window);
 
@@ -423,7 +428,7 @@ int main(int argc, char *argv[])  {
                                 }
                                 read_output->min_methylation = methylation_results.min_methylation;
                                 read_output->max_methylation = methylation_results.max_methylation;
-                                read_output->avg_methylation = methylation_results.avg_methylation;*/
+                                read_output->avg_methylation = methylation_results.avg_methylation;
 
                                 read_pos_counter += l;
                             }
