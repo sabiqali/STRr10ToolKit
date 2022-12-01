@@ -277,7 +277,7 @@ int main(int argc, char *argv[])  {
 
                 for(int i=0;i<b->core.l_qseq;i++){
                     query_sequence += bam_seqi(bam_get_seq(b), i);
-                    std::cout<<bam_seqi(bam_get_seq(b), i)<<std::endl;
+                    std::cout<<bam_seqi(bam_get_seq(b), i);
                 }
 
 		        std::cout<<query_sequence<<std::endl;
