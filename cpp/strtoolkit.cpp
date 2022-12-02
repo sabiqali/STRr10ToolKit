@@ -386,14 +386,15 @@ int main(int argc, char *argv[])  {
                                 //std::cout<<b->core.l_qseq<<" "<<read_pos_counter<<" "<<l<<std::endl;
                                 std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
 
-                                std::cout<<"insert: "<<sequence_of_interest<<std::endl;
-                                break;
+                                //std::cout<<"insert: "<<sequence_of_interest<<std::endl;
 
                                 sizing_struct sizing_result;
                                 decomposer_struct decomposer_result;
                                 methylation_stats methylation_results;
 
                                 decomposer_result = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
+                                std::cout<<bam_get_qname(b)<<" "<<decomposer_result.potential_sequence_in_window<<" "<<decomposer_result.potential_count_in_window<<std::endl;
+                                break;
 
                                 sizing_result = detect_size(sequence_of_interest,decomposer_result.potential_sequence_in_window);
 
