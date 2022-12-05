@@ -396,6 +396,7 @@ int main(int argc, char *argv[])  {
                                 methylation_stats methylation_results;
 
                                 decomposer_result = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
+                                //TODO::have to filter out homopolymer runs here.
 
                                 sizing_result = detect_size(sequence_of_interest,decomposer_result.potential_sequence_in_window);
 
@@ -515,6 +516,7 @@ int main(int argc, char *argv[])  {
                     max_read_support = entry.second;
                     max_motif = entry.first;
                 }
+                std::cout<<entry.first<<std::endl;
             }
             //TODO::We now have the max motif in the window. we need to aggregate all reads which have that motif and output the aggregate results.
             //FUTURE_FEATURE::check other motifs in motif_aggregate to check if they are similar to the max or if they are analogous to it.
