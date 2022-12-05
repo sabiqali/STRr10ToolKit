@@ -502,19 +502,25 @@ int main(int argc, char *argv[])  {
                             std::cerr<<"STRr10ToolKit::Cigar_Parse: cannot parse cigar element\n";
                     }
                 }
-                window_output->window_aggregate.push_back(*read_output);
-                if(window_output->motif_aggregate.find(read_output->motif) == window_output->motif_aggregate.end()) {
-                    window_output->motif_aggregate.insert(make_pair(read_output->motif,1));
+                if(window_output->motif_aggregate.find(read_output->motif) != window_output->motif_aggregate.end()) {
+                    //window_output->motif_aggregate.insert(make_pair(read_output->motif,1));
+                    window_output->motif_aggregate[read_output->motif] += 1;
+                }
+                else if(window_output->motif_aggregate.find(dna_reverse_complement(read_output->motif)) != window_output->motif_aggregate.end()) {
+                    //window_output->motif_aggregate.insert(make_pair(dna_reverse_complement(read_output->motif),1));
+                    window_output->motif_aggregate[dna_reverse_complement(read_output->motif)] += 1;
+                    //should i reverse the motif in the read output as well? to merge all into one?
                 }
                 else {
                     window_output->motif_aggregate[read_output->motif] += 1;
                 }
+                window_output->window_aggregate.push_back(*read_output);
 
                 delete read_output;
             }
             int max_read_support=0;
             per_read_struct tmp_struct;
-            std::string max_motif = "";
+            std::string max_motif;
             for(auto &entry: window_output->motif_aggregate) {
                 if(entry.second > max_read_support) {
                     max_read_support = entry.second;
@@ -526,7 +532,7 @@ int main(int argc, char *argv[])  {
             //FUTURE_FEATURE::check other motifs in motif_aggregate to check if they are similar to the max or if they are analogous to it.
             if(max_read_support >= opt::min_read_support) {
                 //print out the stats from this window
-                std::cout<<max_motif<<std::endl;
+                std::cout<<max_read_support<<" "<<max_motif<<std::endl;
             }
             //otherwise, there aren't any STRs that pass all the filters. moving to the next window
 
