@@ -501,18 +501,20 @@ int main(int argc, char *argv[])  {
                 else {
                     window_output->motif_aggregate[read_output->motif] += 1;
                 }
-                int max_read_support=0;
-                for(auto &entry: window_output->motif_aggregate) {
-                    if(entry.second > max_read_support) {
-                        max_read_support = entry.second;
-                    }
-                }
-                if(max_read_support >= opt::min_read_support) {
-                    //print out the stats from this window
-                    std::cout<<"test\n";
-                }
-                //otherwise, there aren't any STRs that pass all the filters. moving to the next window
             }
+            int max_read_support=0;
+            for(auto &entry: window_output->motif_aggregate) {
+                if(entry.second > max_read_support) {
+                    max_read_support = entry.second;
+                }
+            }
+            if(max_read_support >= opt::min_read_support) {
+                //print out the stats from this window
+                std::cout<<"test\n";
+            }
+            //otherwise, there aren't any STRs that pass all the filters. moving to the next window
+
+            delete window_output;
 	        lower_limit = upper_limit;
 	        upper_limit += opt::window_size;
             hts_itr_destroy(itr);
