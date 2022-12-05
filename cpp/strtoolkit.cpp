@@ -262,10 +262,13 @@ int main(int argc, char *argv[])  {
             std::cout<<region<<std::endl;
 
 	        //generates iterator over region
+            //this one is correct:
             hts_itr_t *itr = sam_itr_querys(idx, h, region.c_str());
             /* or do i use this?:
             int bam_fetch(bamFile fp, const bam_index_t *idx, int tid, int beg, int end, void *data, bam_fetch_f func);
             */
+
+           //TODO::we need to check for overlapping reads on multiple windows. if this is the case, we need to dynamically increase window size in that case.
             while (sam_itr_next(fp, itr, b) >= 0) {
                 per_read_struct* read_output = new per_read_struct();
 
@@ -501,16 +504,23 @@ int main(int argc, char *argv[])  {
                 else {
                     window_output->motif_aggregate[read_output->motif] += 1;
                 }
+
+                delete read_output;
             }
             int max_read_support=0;
+            per_read_struct tmp_struct;
+            std::string max_motif = "";
             for(auto &entry: window_output->motif_aggregate) {
                 if(entry.second > max_read_support) {
                     max_read_support = entry.second;
+                    max_motif = entry.first;
                 }
             }
+            //TODO::We now have the max motif in the window. we need to aggregate all reads which have that motif and output the aggregate results.
+            //FUTURE_FEATURE::check other motifs in motif_aggregate to check if they are similar to the max or if they are analogous to it.
             if(max_read_support >= opt::min_read_support) {
                 //print out the stats from this window
-                std::cout<<"test\n";
+                std::cout<<max_motif<<std::endl;
             }
             //otherwise, there aren't any STRs that pass all the filters. moving to the next window
 
