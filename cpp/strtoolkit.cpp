@@ -397,6 +397,10 @@ int main(int argc, char *argv[])  {
 
                                 decomposer_result = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
                                 //TODO::have to filter out homopolymer runs here.
+                                if(decomposer_result.potential_sequence_in_window.find_first_not_of(decomposer_result.potential_sequence_in_window[0]) == std::string::npos) {
+                                    read_pos_counter += l;
+                                    break;
+                                }
 
                                 sizing_result = detect_size(sequence_of_interest,decomposer_result.potential_sequence_in_window);
 
