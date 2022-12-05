@@ -395,10 +395,10 @@ int main(int argc, char *argv[])  {
                                 decomposer_result = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
 
                                 sizing_result = detect_size(sequence_of_interest,decomposer_result.potential_sequence_in_window);
-                                std::cout<<bam_get_qname(b)<<" "<<decomposer_result.potential_sequence_in_window<<" "<<decomposer_result.potential_count_in_window<<" "<<sizing_result.count<<" "<<sizing_result.interruption_motif<<std::endl;
-                                break;
 
                                 methylation_results = detect_methylation(read_pos_counter,l,b); 
+
+                                //std::cout<<bam_get_qname(b)<<" "<<decomposer_result.potential_sequence_in_window<<" "<<decomposer_result.potential_count_in_window<<" "<<sizing_result.count<<" "<<sizing_result.interruption_motif<<std::endl;
 
                                 if(sizing_result.count<=opt::discovery_sensitivity) {
                                     read_pos_counter += l;
@@ -509,6 +509,7 @@ int main(int argc, char *argv[])  {
                 }
                 if(max_read_support >= opt::min_read_support) {
                     //print out the stats from this window
+                    std::cout<<"test\n";
                 }
                 //otherwise, there aren't any STRs that pass all the filters. moving to the next window
             }
