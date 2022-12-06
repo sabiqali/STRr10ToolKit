@@ -419,9 +419,6 @@ int main(int argc, char *argv[])  {
                                     break;
                                 }
 
-                                //auto ref_region_start_pos = bam_calend(b->core,cigar);
-                                //auto read_size = b->core.l_qseq;
-
                                 read_output->region_ref_start = ref_start_pos + ref_pos_counter;
                                 read_output->region_ref_end = read_output->region_ref_start + 1;
                                 read_output->region_start = read_pos_counter;
@@ -504,19 +501,21 @@ int main(int argc, char *argv[])  {
                             std::cerr<<"STRr10ToolKit::Cigar_Parse: cannot parse cigar element\n";
                     }
                 }
-                if(window_output->motif_aggregate.find(read_output->motif) != window_output->motif_aggregate.end()) {
-                    //window_output->motif_aggregate.insert(make_pair(read_output->motif,1));
-                    window_output->motif_aggregate[read_output->motif] += 1;
+                if(!read_output->motif.empty()) {
+                    if(window_output->motif_aggregate.find(read_output->motif) != window_output->motif_aggregate.end()) {
+                        //window_output->motif_aggregate.insert(make_pair(read_output->motif,1));
+                        window_output->motif_aggregate[read_output->motif] += 1;
+                    }
+                    else if(window_output->motif_aggregate.find(dna_reverse_complement(read_output->motif)) != window_output->motif_aggregate.end()) {
+                        //window_output->motif_aggregate.insert(make_pair(dna_reverse_complement(read_output->motif),1));
+                        window_output->motif_aggregate[dna_reverse_complement(read_output->motif)] += 1;
+                        //should i reverse the motif in the read output as well? to merge all into one?
+                    }
+                    else {
+                        window_output->motif_aggregate[read_output->motif] += 1;
+                    }
+                    window_output->window_aggregate.push_back(*read_output);
                 }
-                else if(window_output->motif_aggregate.find(dna_reverse_complement(read_output->motif)) != window_output->motif_aggregate.end()) {
-                    //window_output->motif_aggregate.insert(make_pair(dna_reverse_complement(read_output->motif),1));
-                    window_output->motif_aggregate[dna_reverse_complement(read_output->motif)] += 1;
-                    //should i reverse the motif in the read output as well? to merge all into one?
-                }
-                else {
-                    window_output->motif_aggregate[read_output->motif] += 1;
-                }
-                window_output->window_aggregate.push_back(*read_output);
 
                 delete read_output;
             }
