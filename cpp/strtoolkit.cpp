@@ -519,7 +519,6 @@ int main(int argc, char *argv[])  {
                 delete read_output;
             }
             int max_read_support=0;
-            per_read_struct tmp_struct;
             std::string max_motif;
             for(auto &entry: window_output->motif_aggregate) {
                 if(entry.second > max_read_support) {
@@ -532,7 +531,29 @@ int main(int argc, char *argv[])  {
             //FUTURE_FEATURE::check other motifs in motif_aggregate to check if they are similar to the max or if they are analogous to it.
             if(max_read_support >= opt::min_read_support) {
                 //print out the stats from this window
-                std::cout<<max_read_support<<" "<<max_motif<<std::endl;
+                //std::cout<<max_read_support<<" "<<max_motif<<std::endl;
+                std::vector<per_read_struct> matching_reads;
+                int mean_ref_start = 0;
+                int mean_ref_end = 0;
+                int read_count = 0;
+
+                for(auto &individual_read: window_output->window_aggregate) {
+                    if((individual_read.motif == max_motif) || (dna_reverse_complement(individual_read.motif) == max_motif)) {
+                        mean_ref_start += individual_read.region_ref_start;
+                        mean_ref_end += individual_read.region_ref_end;
+                        read_count += 1;
+
+                        matching_reads.push_back(individual_read);
+                    }
+                }
+
+                mean_ref_end = mean_ref_end/read_count;
+                mean_ref_start = mean_ref_start/read_count;
+
+                for(auto matching_read: matching_reads) {
+                    std::cout<<chr<<"\t"<<matching_read.query_name<<"\t"<<max_motif<<"\t"<<matching_read.interruption_motif<<"\t"<<matching_read.region_start<<"\t"<<matching_read.region_end<<"\t"<<mean_ref_start<<"\t"<<mean_ref_end<<"\t"<<matching_read.size<<"\t"<<matching_read.avg_methylation<<"\t"<<matching_read.min_methylation<<"\t"<<matching_read.max_methylation<<std::endl;
+                    //chromosome start end reference_length h1_str_length h2_str_length h1_upstream_methylation h1_in_repeat_methylation h1_downstream_methylation h2_upstream_methylation h2_in_repeat_methylation h2_downstream_methylation
+                }
             }
             //otherwise, there aren't any STRs that pass all the filters. moving to the next window
 
