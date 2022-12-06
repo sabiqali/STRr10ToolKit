@@ -52,6 +52,17 @@ Toolkit to detect and analyse STR loci
   -t, --threads=NUM                    use NUM threads.(Default: 1)
 ```
 
+* It is mandatory to provide the bam file to perform the analysis. Please ensure that an index file exists for the bam file. If you don't have one, it can be generated easily with the command:
+```
+samtools index input.bam
+```
+* The default output is to stdout. If you want file output, please set the ```--verbose``` tag and provide and output file_name and directory to get the output in a ```.tsv``` format.
+* The tool can provide a haplotype based analysis, the pre-requisite being phasing data should be present in the ```.bam``` in the form of haplotags("HP"). For more information on this visit the Whatshap [README](https://whatshap.readthedocs.io/en/latest/guide.html#whatshap-haplotag). Haplotags can be generated easily using Whatshap using the following command:
+```
+whatshap haplotag -o haplotagged.bam --reference reference.fasta phased.vcf.gz alignments.bam
+```
+* The toolkit involves several other configurable units which are mentioned in the usage above.
+
 ## Output
 
 The output is in a ```.tsv``` format that will look something like this:
