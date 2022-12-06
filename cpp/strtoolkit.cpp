@@ -250,7 +250,7 @@ int main(int argc, char *argv[])  {
         chr_list.push_back(token);
     }
 
-    std::cout<<"chromosome\tread_name\tmotif\tinteruption_motif\tread_start\tread_end\tref_start\tref_end\tcount\tavg_methylation\tmin_methylation\tmax_methylation\thaplotype\n";
+    std::cout<<"read_name\tchromosome\tref_start\tref_end\tread_start\tread_end\tmotif\tinteruption_motif\tcount\tavg_methylation\tmin_methylation\tmax_methylation\thaplotype\n";
 
     for (auto chr: chr_list) {
         int lower_limit = 0;
@@ -553,7 +553,7 @@ int main(int argc, char *argv[])  {
                 mean_ref_start = mean_ref_start/read_count;
 
                 for(auto matching_read: matching_reads) {
-                    std::cout<<chr<<"\t"<<matching_read.query_name<<"\t"<<max_motif<<"\t"<<matching_read.interruption_motif<<"\t"<<matching_read.region_start<<"\t"<<matching_read.region_end<<"\t"<<mean_ref_start<<"\t"<<mean_ref_end<<"\t"<<matching_read.size<<"\t"<<matching_read.avg_methylation<<"\t"<<matching_read.min_methylation<<"\t"<<matching_read.max_methylation<<"\t"<<matching_read.haplotype<<std::endl;
+                    std::cout<<matching_read.query_name<<"\t"<<chr<<"\t"<<mean_ref_start<<"\t"<<mean_ref_end<<"\t"<<matching_read.region_start<<"\t"<<matching_read.region_end<<"\t"<<max_motif<<"\t"<<matching_read.interruption_motif<<"\t"<<matching_read.size<<"\t"<<matching_read.avg_methylation<<"\t"<<matching_read.min_methylation<<"\t"<<matching_read.max_methylation<<"\t"<<matching_read.haplotype<<std::endl;
                     //chromosome start end reference_length h1_str_length h2_str_length h1_upstream_methylation h1_in_repeat_methylation h1_downstream_methylation h2_upstream_methylation h2_in_repeat_methylation h2_downstream_methylation
                 }
             }
