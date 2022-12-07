@@ -174,3 +174,14 @@ decomposer_struct decompose_string(std::string sequence_of_interest, int lower_l
 
     return return_variable;
 }
+
+int get_haplotag(bam1_t *b) {
+    int haplotag = bam_aux2i(bam_aux_get(b, "HP")); //encoded as HP:i:1 or HP:i:2 by Whatshap
+
+    if(haplotag == 1 || haplotag == 2) {
+        return haplotag;
+    }
+    else {
+        return 0;
+    }
+}

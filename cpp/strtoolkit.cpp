@@ -396,6 +396,7 @@ int main(int argc, char *argv[])  {
                                 sizing_struct sizing_result;
                                 decomposer_struct decomposer_result;
                                 methylation_stats methylation_results;
+                                int haplotype_of_read = 0;
 
                                 decomposer_result = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
                                 //TODO::have to filter out homopolymer runs here.
@@ -407,6 +408,10 @@ int main(int argc, char *argv[])  {
                                 sizing_result = detect_size(sequence_of_interest,decomposer_result.potential_sequence_in_window);
 
                                 //methylation_results = detect_methylation(read_pos_counter,l,b); 
+
+                                if(opt::is_phased) {
+                                    haplotype_of_read = get_haplotag(b);
+                                }
 
                                 //std::cout<<bam_get_qname(b)<<" "<<decomposer_result.potential_sequence_in_window<<" "<<decomposer_result.potential_count_in_window<<" "<<sizing_result.count<<" "<<sizing_result.interruption_motif<<std::endl;
 
@@ -437,6 +442,7 @@ int main(int argc, char *argv[])  {
                                 read_output->min_methylation = methylation_results.min_methylation;
                                 read_output->max_methylation = methylation_results.max_methylation;
                                 read_output->avg_methylation = methylation_results.avg_methylation;
+                                read_output->haplotype = haplotype_of_read;
 
                                 read_pos_counter += l;
                             }

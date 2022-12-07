@@ -54,5 +54,7 @@ decomposer_struct decompose_string(std::string sequence_of_interest, int lower_l
 
 std::string dna_reverse_complement(std::string seq);
 
+int get_haplotag(bam1_t *b);
+
 #endif
 
