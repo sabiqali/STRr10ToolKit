@@ -23,6 +23,8 @@
 #include "htslib/htslib/sam.h"
 #include "htslib/htslib/faidx.h"
 #include "htslib/htslib/hts.h"
+#include <stdint.h>
+#include "abPOA/include/abpoa.h"
 
 struct decomposer_struct {
     std::string potential_sequence_in_window;
@@ -55,6 +57,8 @@ decomposer_struct decompose_string(std::string sequence_of_interest, int lower_l
 std::string dna_reverse_complement(std::string seq);
 
 int get_haplotag(bam1_t *b);
+
+std::vector<std::string> get_consensus_sequence(char** sequences, int m, int n);  //m is rows and n is columns
 
 #endif
 

@@ -1,5 +1,46 @@
 #include "./str_utilities.h"
 
+// for nt
+// AaCcGgTtNn ==> 0,1,2,3,4
+unsigned char nt4_table[256] = {
+       0, 1, 2, 3,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4, 
+       4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4, 
+       4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4 /*'-'*/, 4, 4,
+       4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4, 
+       4, 0, 4, 1,  4, 4, 4, 2,  4, 4, 4, 4,  4, 4, 4, 4, 
+       4, 4, 4, 4,  3, 3, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4, 
+       4, 0, 4, 1,  4, 4, 4, 2,  4, 4, 4, 4,  4, 4, 4, 4, 
+       4, 4, 4, 4,  3, 3, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4, 
+       4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4, 
+       4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4, 
+       4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4, 
+       4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4, 
+       4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4, 
+       4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4, 
+       4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4, 
+       4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4
+};
+
+// 65,97=>A, 67,99=>C, 71,103=>G, 84,85,116,117=>T, else=>N
+const char nt256_table[256] = {
+       'A', 'C', 'G', 'T',  'N', '-', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',
+       'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', '-',  'N', 'N', 'N', 'N',
+       'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',
+       'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',
+       'N', 'A', 'N', 'C',  'N', 'N', 'N', 'G',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',
+       'N', 'N', 'N', 'N',  'T', 'T', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',
+       'N', 'A', 'N', 'C',  'N', 'N', 'N', 'G',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',
+       'N', 'N', 'N', 'N',  'T', 'T', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',
+       'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',
+       'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',
+       'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',
+       'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',
+       'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',
+       'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',
+       'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',
+       'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N',  'N', 'N', 'N', 'N'
+};
+
 std::string dna_reverse_complement(std::string seq) {
     reverse(seq.begin(),seq.end());
     for (std::size_t i = 0; i < seq.length(); ++i){
@@ -184,4 +225,84 @@ int get_haplotag(bam1_t *b) {
     else {
         return 0;
     }
+}
+
+std::vector<std::string> get_consensus_sequence(char** sequences, int m, int n) { //m is rows and n is columns
+    int i, j, n_seqs = m;
+
+    std::vector<std::string> output_msa;
+
+    // initialize variables
+    abpoa_t *ab = abpoa_init();
+    abpoa_para_t *abpt = abpoa_init_para();
+
+    // output options
+    abpt->out_msa = 1; // generate Row-Column multiple sequence alignment(RC-MSA), set 0 to disable
+    abpt->out_cons = 1; // generate consensus sequence, set 0 to disable
+    abpt->w = 6, abpt->k = 9; abpt->min_w = 10; // minimizer-based seeding and partition
+    abpt->progressive_poa = 1;
+    abpt->max_n_cons = 2; // to generate 2 consensus sequences
+
+    abpoa_post_set_para(abpt);
+
+    // collect sequence length, trasform ACGT to 0123
+    int *seq_lens = (int*)malloc(sizeof(int) * n_seqs);
+    uint8_t **bseqs = (uint8_t**)malloc(sizeof(uint8_t*) * n_seqs);
+    int **weights = (int**)malloc(sizeof(int*) * n_seqs);
+    for (i = 0; i < n_seqs; ++i) {
+        seq_lens[i] = strlen(sequences[i]);
+        bseqs[i] = (uint8_t*)malloc(sizeof(uint8_t) * seq_lens[i]);
+        weights[i] = (int*)malloc(sizeof(int) * seq_lens[i]);
+        for (j = 0; j < seq_lens[i]; ++j) {
+            bseqs[i][j] = nt4_table[(int)sequences[i][j]];
+            if (j >= 12) weights[i][j] = 2;
+            else weights[i][j] = 0;
+        }
+    }
+
+    // 1. directly output to stdout
+    fprintf(stdout, "=== output to stdout ===\n");
+    abpt->use_qv = 1;
+    // perform abpoa-msa
+    // set weights as NULL if no quality score weights are used
+    abpoa_msa(ab, abpt, n_seqs, NULL, seq_lens, bseqs, weights, stdout);
+
+    // 2. output MSA alignment and consensus sequence stored in (abpoa_cons_t *)
+    abpoa_cons_t *abc = ab->abc;
+    fprintf(stdout, "=== stored in variables ===\n");
+    fprintf(stdout, ">Multiple_sequence_alignment\n");
+    for (i = 0; i < abc->n_seq; ++i) {
+        for (j = 0; j < abc->msa_len; ++j) {
+            fprintf(stdout, "%c", nt256_table[abc->msa_base[i][j]]);
+        }
+        fprintf(stdout, "\n");
+    }
+
+    for (i = 0; i < abc->n_cons; ++i) {
+        std::string cons_seq;
+        fprintf(stdout, ">Consensus_sequence");
+        if (abc->n_cons > 1) {
+            fprintf(stdout, "_%d ", i+1);
+            for (j = 0; j < abc->clu_n_seq[i]; ++j) { // output read ids for each cluster/group
+                fprintf(stdout, "%d", abc->clu_read_ids[i][j]);
+                if (j != abc->clu_n_seq[i]-1) fprintf(stdout, ",");
+            }
+        }
+        fprintf(stdout, "\n");
+        for (j = 0; j < abc->cons_len[i]; ++j) {
+            fprintf(stdout, "%c", nt256_table[abc->cons_base[i][j]]); //TODO::need to append this to output string to get consensus sequence
+            cons_seq += nt256_table[abc->cons_base[i][j]];
+        }
+        output_msa.push_back(cons_seq);
+        fprintf(stdout, "\n");
+    }
+
+    // free seq-related variables
+    for (i = 0; i < n_seqs; ++i) { free(bseqs[i]); free(weights[i]); }
+    free(bseqs); free(seq_lens); free(weights);
+
+    // free abpoa-related variables
+    abpoa_free(ab); abpoa_free_para(abpt); 
+
+    return output_msa;
 }
