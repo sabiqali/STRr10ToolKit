@@ -256,6 +256,9 @@ int main(int argc, char *argv[])  {
         int lower_limit = 0;
         int upper_limit = opt::window_size;
 
+        //TODO::potentially implement a bloom filter to keep track of all reads which have been counted or visited. if you see a read which has been visited, skip it. read name is 36 chars.
+        //TODO::or remove the windows and go through read by read and group by where the repeat has been found. 
+
         while(upper_limit <= ref_chr_size(chr)) {
             per_window_struct* window_output = new per_window_struct();
 
@@ -508,7 +511,34 @@ int main(int argc, char *argv[])  {
                     }
                 }
                 if(!read_output->motif.empty()) {
-                    if(window_output->motif_aggregate.find(read_output->motif) != window_output->motif_aggregate.end()) {
+                    //TODO::while checking the motifs to add them to the read support also count analogous motifs by getting all possible combinations by rotating the motif. and also their complements. aggregate under only 1 motif
+                    //Feature added
+                    std::string rotated_motif = read_output->motif;
+                    int found = 0;
+
+                    //loop to rotate through the entire string one character at a time and check if they individually exist.
+                    for(int i=0; i<read_output->motif.length(); i++) {
+                        std::rotate(rotated_motif.begin(), rotated_motif.begin() + 1, rotated_motif.end());
+                        if(window_output->motif_aggregate.find(rotated_motif) != window_output->motif_aggregate.end()) {
+                            //window_output->motif_aggregate.insert(make_pair(read_output->motif,1));
+                            window_output->motif_aggregate[rotated_motif] += 1;
+                            found++;
+                        }
+                        else if(window_output->motif_aggregate.find(dna_reverse_complement(rotated_motif)) != window_output->motif_aggregate.end()) {
+                            //window_output->motif_aggregate.insert(make_pair(dna_reverse_complement(read_output->motif),1));
+                            window_output->motif_aggregate[dna_reverse_complement(rotated_motif)] += 1;
+                            found++;
+                            //should i reverse the motif in the read output as well? to merge all into one?
+                        }
+                    }
+
+                    if(found == 0)
+                        window_output->motif_aggregate[read_output->motif] += 1;
+                    else
+                        found = 0;
+                    
+                    //--------ORIGINAL CODE START--------------------
+                    /*if(window_output->motif_aggregate.find(read_output->motif) != window_output->motif_aggregate.end()) {
                         //window_output->motif_aggregate.insert(make_pair(read_output->motif,1));
                         window_output->motif_aggregate[read_output->motif] += 1;
                     }
@@ -519,7 +549,8 @@ int main(int argc, char *argv[])  {
                     }
                     else {
                         window_output->motif_aggregate[read_output->motif] += 1;
-                    }
+                    }*/
+                    //--------ORIGINAL CODE START-------------------
                     window_output->window_aggregate.push_back(*read_output);
                 }
 
@@ -535,16 +566,43 @@ int main(int argc, char *argv[])  {
                 //std::cout<<entry.first<<std::endl;
             }
             //TODO::We now have the max motif in the window. we need to aggregate all reads which have that motif and output the aggregate results.
+            //feature added
             //FUTURE_FEATURE::check other motifs in motif_aggregate to check if they are similar to the max or if they are analogous to it.
+            //feature added above
             if(max_read_support >= opt::min_read_support) {
+                //TODO::now that motif has passed the min_read_support test, send all motifs to abPOA to get the consensus and print that out as the motif in the last loop here
                 //print out the stats from this window
-                //std::cout<<max_read_support<<" "<<max_motif<<std::endl;
-                std::vector<per_read_struct> matching_reads;
+                //std::vector<per_read_struct> matching_reads; //needed for original code
+                int num_of_reads = window_output->window_aggregate.size();
+                char all_motifs[num_of_reads][20];
                 int mean_ref_start = 0;
                 int mean_ref_end = 0;
                 int read_count = 0;
+                std::vector<std::string> consensus_sequences;
+
+                //question here would be, should i send the entire window aggregate to abPOA or should i send only the matching reads?
+                //sending the entire window aggregate for now
+                for(auto &individual_read: window_output->window_aggregate) {
+                    mean_ref_start += individual_read.region_ref_start;
+                    mean_ref_end += individual_read.region_ref_end;
+
+                    strcpy( all_motifs[read_count], individual_read.motif.c_str());
+
+                    read_count += 1;
+                }
+
+                mean_ref_end = mean_ref_end/read_count;
+                mean_ref_start = mean_ref_start/read_count;
+
+                consensus_sequences = get_consensus_sequence(num_of_reads, 20, all_motifs);
 
                 for(auto &individual_read: window_output->window_aggregate) {
+                    std::cout<<individual_read.query_name<<"\t"<<chr<<"\t"<<mean_ref_start<<"\t"<<mean_ref_end<<"\t"<<individual_read.region_start<<"\t"<<individual_read.region_end<<"\t"<<consensus_sequences[0]<<"\t"<<individual_read.interruption_motif<<"\t"<<individual_read.size<<"\t"<<individual_read.avg_methylation<<"\t"<<individual_read.min_methylation<<"\t"<<individual_read.max_methylation<<"\t"<<individual_read.haplotype<<std::endl;
+                    //chromosome start end reference_length h1_str_length h2_str_length h1_upstream_methylation h1_in_repeat_methylation h1_downstream_methylation h2_upstream_methylation h2_in_repeat_methylation h2_downstream_methylation
+                }
+
+                //---------ORIGINAL CODE START---------------------
+                /*for(auto &individual_read: window_output->window_aggregate) {
                     if((individual_read.motif == max_motif) || (dna_reverse_complement(individual_read.motif) == max_motif)) {
                         mean_ref_start += individual_read.region_ref_start;
                         mean_ref_end += individual_read.region_ref_end;
@@ -560,7 +618,8 @@ int main(int argc, char *argv[])  {
                 for(auto matching_read: matching_reads) {
                     std::cout<<matching_read.query_name<<"\t"<<chr<<"\t"<<mean_ref_start<<"\t"<<mean_ref_end<<"\t"<<matching_read.region_start<<"\t"<<matching_read.region_end<<"\t"<<max_motif<<"\t"<<matching_read.interruption_motif<<"\t"<<matching_read.size<<"\t"<<matching_read.avg_methylation<<"\t"<<matching_read.min_methylation<<"\t"<<matching_read.max_methylation<<"\t"<<matching_read.haplotype<<std::endl;
                     //chromosome start end reference_length h1_str_length h2_str_length h1_upstream_methylation h1_in_repeat_methylation h1_downstream_methylation h2_upstream_methylation h2_in_repeat_methylation h2_downstream_methylation
-                }
+                }*/
+                //--------ORIGINAL CODE END-------------------------------
             }
             //otherwise, there aren't any STRs that pass all the filters. moving to the next window
 

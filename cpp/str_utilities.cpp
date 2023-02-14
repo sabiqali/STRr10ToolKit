@@ -227,7 +227,7 @@ int get_haplotag(bam1_t *b) {
     }
 }
 
-std::vector<std::string> get_consensus_sequence(char** sequences, int m, int n) { //m is rows and n is columns
+std::vector<std::string> get_consensus_sequence(int m, int n, char sequences[][20]) { //m is rows and n is columns
     int i, j, n_seqs = m;
 
     std::vector<std::string> output_msa;
