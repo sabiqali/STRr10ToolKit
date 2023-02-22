@@ -261,11 +261,11 @@ std::vector<std::string> get_consensus_sequence(int m, int n, char sequences[][2
     }
 
     // 1. directly output to stdout
-    fprintf(stdout, "=== output to stdout ===\n");
+    //fprintf(stdout, "=== output to stdout ===\n");
     abpt->use_qv = 1;
     // perform abpoa-msa
     // set weights as NULL if no quality score weights are used
-    abpoa_msa(ab, abpt, n_seqs, NULL, seq_lens, bseqs, weights, stdout);
+    abpoa_msa(ab, abpt, n_seqs, NULL, seq_lens, bseqs, weights, NULL);
 
     // 2. output MSA alignment and consensus sequence stored in (abpoa_cons_t *)
     abpoa_cons_t *abc = ab->abc;

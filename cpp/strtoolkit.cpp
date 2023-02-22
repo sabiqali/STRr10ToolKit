@@ -258,7 +258,7 @@ int main(int argc, char *argv[])  {
 
         //TODO::potentially implement a bloom filter to keep track of all reads which have been counted or visited. if you see a read which has been visited, skip it. read name is 36 chars.
         //TODO::or remove the windows and go through read by read and group by where the repeat has been found. 
-
+        //TODO::If we go with a windowed approach, possibly label the loci ranges to differentiate the output. 
         while(upper_limit <= ref_chr_size(chr)) {
             per_window_struct* window_output = new per_window_struct();
 
