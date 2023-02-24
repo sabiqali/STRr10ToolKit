@@ -279,8 +279,7 @@ std::vector<std::string> get_consensus_sequence(int m, int n, char sequences[][2
     abpt->use_qv = 1;
     // perform abpoa-msa
     // set weights as NULL if no quality score weights are used
-    //abpoa_msa(ab, abpt, n_seqs, NULL, seq_lens, bseqs, weights, stdout);
-    int val = abpoa_msa(ab, abpt, n_seqs, NULL, seq_lens, bseqs, NULL);
+    abpoa_msa(ab, abpt, n_seqs, NULL, seq_lens, bseqs, weights, stdout);
 
     // 2. output MSA alignment and consensus sequence stored in (abpoa_cons_t *)
     abpoa_cons_t *abc = ab->abc;
