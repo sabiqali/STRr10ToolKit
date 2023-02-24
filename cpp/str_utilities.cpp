@@ -236,6 +236,20 @@ std::vector<std::string> get_consensus_sequence(int m, int n, char sequences[][2
     abpoa_t *ab = abpoa_init();
     abpoa_para_t *abpt = abpoa_init_para();
 
+    // alignment parameters
+    // abpt->align_mode = 0; // 0:global 1:local, 2:extension
+    // abpt->mat_fn = strdup("HOXD70.mtx"); abpt->use_score_matrix = 1; // score matrix instead of constant match/mismatch score
+    // abpt->match = 2;      // match score
+    // abpt->mismatch = 4;   // mismatch penalty
+    // abpt->gap_mode = ABPOA_CONVEX_GAP; // gap penalty mode
+    // abpt->gap_open1 = 4;  // gap open penalty #1
+    // abpt->gap_ext1 = 2;   // gap extension penalty #1
+    // abpt->gap_open2 = 24; // gap open penalty #2
+    // abpt->gap_ext2 = 1;   // gap extension penalty #2
+                             // gap_penalty = min{gap_open1 + gap_len * gap_ext1, gap_open2 + gap_len * gap_ext2}
+    // abpt->bw = 10;        // extra band used in adaptive banded DP
+    // abpt->bf = 0.01; 
+     
     // output options
     abpt->out_msa = 1; // generate Row-Column multiple sequence alignment(RC-MSA), set 0 to disable
     abpt->out_cons = 1; // generate consensus sequence, set 0 to disable
@@ -261,11 +275,11 @@ std::vector<std::string> get_consensus_sequence(int m, int n, char sequences[][2
     }
 
     // 1. directly output to stdout
-    //fprintf(stdout, "=== output to stdout ===\n");
+    fprintf(stdout, "=== output to stdout ===\n");
     abpt->use_qv = 1;
     // perform abpoa-msa
     // set weights as NULL if no quality score weights are used
-    abpoa_msa(ab, abpt, n_seqs, NULL, seq_lens, bseqs, weights, NULL);
+    abpoa_msa(ab, abpt, n_seqs, NULL, seq_lens, bseqs, weights, stdout);
 
     // 2. output MSA alignment and consensus sequence stored in (abpoa_cons_t *)
     abpoa_cons_t *abc = ab->abc;
@@ -279,7 +293,6 @@ std::vector<std::string> get_consensus_sequence(int m, int n, char sequences[][2
     }
 
     for (i = 0; i < abc->n_cons; ++i) {
-        std::string cons_seq;
         fprintf(stdout, ">Consensus_sequence");
         if (abc->n_cons > 1) {
             fprintf(stdout, "_%d ", i+1);
@@ -290,12 +303,16 @@ std::vector<std::string> get_consensus_sequence(int m, int n, char sequences[][2
         }
         fprintf(stdout, "\n");
         for (j = 0; j < abc->cons_len[i]; ++j) {
-            fprintf(stdout, "%c", nt256_table[abc->cons_base[i][j]]); //TODO::need to append this to output string to get consensus sequence
+            fprintf(stdout, "%c", nt256_table[abc->cons_base[i][j]]);
             cons_seq += nt256_table[abc->cons_base[i][j]];
         }
-        output_msa.push_back(cons_seq);
         fprintf(stdout, "\n");
+        output_msa.push_back(cons_seq);
     }
+
+    /* generate DOT partial order graph plot */
+    abpt->out_pog = strdup("example.png"); // dump parital order graph to file
+    if (abpt->out_pog != NULL) abpoa_dump_pog(ab, abpt);
 
     // free seq-related variables
     for (i = 0; i < n_seqs; ++i) { free(bseqs[i]); free(weights[i]); }
