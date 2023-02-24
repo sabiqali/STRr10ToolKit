@@ -293,6 +293,7 @@ std::vector<std::string> get_consensus_sequence(int m, int n, char sequences[][2
     }
 
     for (i = 0; i < abc->n_cons; ++i) {
+        std::string cons_seq;
         fprintf(stdout, ">Consensus_sequence");
         if (abc->n_cons > 1) {
             fprintf(stdout, "_%d ", i+1);
