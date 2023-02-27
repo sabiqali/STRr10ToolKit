@@ -227,8 +227,8 @@ int get_haplotag(bam1_t *b) {
     }
 }
 
-std::vector<std::string> get_consensus_sequence(int m, int n, char sequences[][20]) { //m is rows and n is columns
-    int i, j, n_seqs = m;
+std::vector<std::string> get_consensus_sequence(std::vector<std::string> sequences) { //m is rows and n is columns
+    int i, j, n_seqs = sequences.size();
 
     std::vector<std::string> output_msa;
 
@@ -254,23 +254,24 @@ std::vector<std::string> get_consensus_sequence(int m, int n, char sequences[][2
     abpt->out_msa = 1; // generate Row-Column multiple sequence alignment(RC-MSA), set 0 to disable
     abpt->out_cons = 1; // generate consensus sequence, set 0 to disable
     abpt->w = 6, abpt->k = 9; abpt->min_w = 10; // minimizer-based seeding and partition
-    abpt->progressive_poa = 1;
-    abpt->max_n_cons = 2; // to generate 2 consensus sequences
+    //abpt->progressive_poa = 1;
+    abpt->max_n_cons = 1; // to generate 2 consensus sequences
 
     abpoa_post_set_para(abpt);
 
     // collect sequence length, trasform ACGT to 0123
     int *seq_lens = (int*)malloc(sizeof(int) * n_seqs);
     uint8_t **bseqs = (uint8_t**)malloc(sizeof(uint8_t*) * n_seqs);
-    int **weights = (int**)malloc(sizeof(int*) * n_seqs);
+    //int **weights = (int**)malloc(sizeof(int*) * n_seqs);
     for (i = 0; i < n_seqs; ++i) {
-        seq_lens[i] = strlen(sequences[i]);
+        //seq_lens[i] = strlen(sequences[i]);
+	seq_lens[i] = sequences[i].length();
         bseqs[i] = (uint8_t*)malloc(sizeof(uint8_t) * seq_lens[i]);
-        weights[i] = (int*)malloc(sizeof(int) * seq_lens[i]);
+        //weights[i] = (int*)malloc(sizeof(int) * seq_lens[i]);
         for (j = 0; j < seq_lens[i]; ++j) {
             bseqs[i][j] = nt4_table[(int)sequences[i][j]];
-            if (j >= 12) weights[i][j] = 2;
-            else weights[i][j] = 0;
+            //if (j >= 12) weights[i][j] = 2;
+            //else weights[i][j] = 0;
         }
     }
 
@@ -280,7 +281,23 @@ std::vector<std::string> get_consensus_sequence(int m, int n, char sequences[][2
     // perform abpoa-msa
     // set weights as NULL if no quality score weights are used
     //abpoa_msa(ab, abpt, n_seqs, NULL, seq_lens, bseqs, weights, stdout);
-    abpoa_msa(ab, abpt, n_seqs, NULL, seq_lens, bseqs, NULL);
+    //std::cout<<"before msa\n";
+    int val = abpoa_msa(ab, abpt, n_seqs, NULL, seq_lens, bseqs, NULL);
+    //std::cout<<"after msa\n";
+    if(val == 1) {
+        //free seq-related variables
+	for (i = 0; i < n_seqs; ++i) { 
+		free(bseqs[i]); 
+		//free(weights[i]); 
+	}
+	free(bseqs); 
+	free(seq_lens); 
+	//free(weights);
+	
+	// free abpoa-related variables
+	abpoa_free(ab); abpoa_free_para(abpt);
+	output_msa.push_back("");
+    }
 
     // 2. output MSA alignment and consensus sequence stored in (abpoa_cons_t *)
     abpoa_cons_t *abc = ab->abc;
@@ -317,8 +334,13 @@ std::vector<std::string> get_consensus_sequence(int m, int n, char sequences[][2
     //if (abpt->out_pog != NULL) abpoa_dump_pog(ab, abpt);
 
     // free seq-related variables
-    for (i = 0; i < n_seqs; ++i) { free(bseqs[i]); free(weights[i]); }
-    free(bseqs); free(seq_lens); free(weights);
+    for (i = 0; i < n_seqs; ++i) { 
+	    free(bseqs[i]); 
+	    //free(weights[i]); 
+    }
+    free(bseqs); 
+    free(seq_lens); 
+    //free(weights);
 
     // free abpoa-related variables
     abpoa_free(ab); abpoa_free_para(abpt); 

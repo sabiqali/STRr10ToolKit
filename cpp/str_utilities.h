@@ -58,7 +58,7 @@ std::string dna_reverse_complement(std::string seq);
 
 int get_haplotag(bam1_t *b);
 
-std::vector<std::string> get_consensus_sequence(int m, int n, char sequences[][20]);  //m is rows and n is columns
+std::vector<std::string> get_consensus_sequence(std::vector<std::string> sequences);  //m is rows and n is columns
 
 #endif
 
