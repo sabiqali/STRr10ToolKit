@@ -275,45 +275,46 @@ std::vector<std::string> get_consensus_sequence(int m, int n, char sequences[][2
     }
 
     // 1. directly output to stdout
-    fprintf(stdout, "=== output to stdout ===\n");
-    abpt->use_qv = 1;
+    //fprintf(stdout, "=== output to stdout ===\n");
+    //abpt->use_qv = 1;
     // perform abpoa-msa
     // set weights as NULL if no quality score weights are used
-    abpoa_msa(ab, abpt, n_seqs, NULL, seq_lens, bseqs, weights, stdout);
+    //abpoa_msa(ab, abpt, n_seqs, NULL, seq_lens, bseqs, weights, stdout);
+    abpoa_msa(ab, abpt, n_seqs, NULL, seq_lens, bseqs, NULL);
 
     // 2. output MSA alignment and consensus sequence stored in (abpoa_cons_t *)
     abpoa_cons_t *abc = ab->abc;
-    fprintf(stdout, "=== stored in variables ===\n");
-    fprintf(stdout, ">Multiple_sequence_alignment\n");
-    for (i = 0; i < abc->n_seq; ++i) {
+    //fprintf(stdout, "=== stored in variables ===\n");
+    //fprintf(stdout, ">Multiple_sequence_alignment\n");
+    /*for (i = 0; i < abc->n_seq; ++i) {
         for (j = 0; j < abc->msa_len; ++j) {
             fprintf(stdout, "%c", nt256_table[abc->msa_base[i][j]]);
         }
         fprintf(stdout, "\n");
-    }
+    }*/
 
     for (i = 0; i < abc->n_cons; ++i) {
         std::string cons_seq;
-        fprintf(stdout, ">Consensus_sequence");
-        if (abc->n_cons > 1) {
+        //fprintf(stdout, ">Consensus_sequence");
+        /*if (abc->n_cons > 1) {
             fprintf(stdout, "_%d ", i+1);
             for (j = 0; j < abc->clu_n_seq[i]; ++j) { // output read ids for each cluster/group
                 fprintf(stdout, "%d", abc->clu_read_ids[i][j]);
                 if (j != abc->clu_n_seq[i]-1) fprintf(stdout, ",");
             }
-        }
-        fprintf(stdout, "\n");
+        }*/
+        //fprintf(stdout, "\n");
         for (j = 0; j < abc->cons_len[i]; ++j) {
-            fprintf(stdout, "%c", nt256_table[abc->cons_base[i][j]]);
+            //fprintf(stdout, "%c", nt256_table[abc->cons_base[i][j]]);
             cons_seq += nt256_table[abc->cons_base[i][j]];
         }
-        fprintf(stdout, "\n");
+        //fprintf(stdout, "\n");
         output_msa.push_back(cons_seq);
     }
 
     /* generate DOT partial order graph plot */
-    abpt->out_pog = strdup("example.png"); // dump parital order graph to file
-    if (abpt->out_pog != NULL) abpoa_dump_pog(ab, abpt);
+    //abpt->out_pog = strdup("example.png"); // dump parital order graph to file
+    //if (abpt->out_pog != NULL) abpoa_dump_pog(ab, abpt);
 
     // free seq-related variables
     for (i = 0; i < n_seqs; ++i) { free(bseqs[i]); free(weights[i]); }
