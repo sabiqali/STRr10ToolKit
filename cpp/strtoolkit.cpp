@@ -410,6 +410,12 @@ int main(int argc, char *argv[])  {
 
                                 sizing_result = detect_size(sequence_of_interest,decomposer_result.potential_sequence_in_window);
 
+                                char *mm_str = bam_aux2Z(bam_aux_get(b, "MM"));
+                                char *probability_array = bam_aux2Z(bam_aux_get(b, "ML"));
+
+                                std::cout<<*mm_str<<std::endl;
+                                std::cout<<*probability_array<<std::emdl;
+
                                 //methylation_results = detect_methylation(read_pos_counter,l,b); 
 
                                 if(opt::is_phased) {
