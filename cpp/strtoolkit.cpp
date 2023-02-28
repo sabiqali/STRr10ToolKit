@@ -580,10 +580,11 @@ int main(int argc, char *argv[])  {
                 //print out the stats from this window
                 //std::vector<per_read_struct> matching_reads; //needed for original code
                 int num_of_reads = window_output->window_aggregate.size();
-                char all_motifs[num_of_reads][20];
+                //char all_motifs[num_of_reads][20];
                 int mean_ref_start = 0;
                 int mean_ref_end = 0;
                 int read_count = 0;
+		std::vector<std::string> all_motifs;
                 std::vector<std::string> consensus_sequences;
 
                 //question here would be, should i send the entire window aggregate to abPOA or should i send only the matching reads?
@@ -592,7 +593,8 @@ int main(int argc, char *argv[])  {
                     mean_ref_start += individual_read.region_ref_start;
                     mean_ref_end += individual_read.region_ref_end;
 
-                    strcpy( all_motifs[read_count], individual_read.motif.c_str());
+		    all_motifs.push_back(individual_read.motif);
+                    //strcpy( all_motifs[read_count], individual_read.motif.c_str());
 
                     read_count += 1;
                 }
@@ -600,7 +602,7 @@ int main(int argc, char *argv[])  {
                 mean_ref_end = mean_ref_end/read_count;
                 mean_ref_start = mean_ref_start/read_count;
 
-                consensus_sequences = get_consensus_sequence(num_of_reads, 20, all_motifs);
+                consensus_sequences = get_consensus_sequence(all_motifs);
 
                 for(auto &individual_read: window_output->window_aggregate) {
                     std::cout<<individual_read.query_name<<"\t"<<chr<<"\t"<<mean_ref_start<<"\t"<<mean_ref_end<<"\t"<<individual_read.region_start<<"\t"<<individual_read.region_end<<"\t"<<consensus_sequences[0]<<"\t"<<individual_read.interruption_motif<<"\t"<<individual_read.size<<"\t"<<individual_read.avg_methylation<<"\t"<<individual_read.min_methylation<<"\t"<<individual_read.max_methylation<<"\t"<<individual_read.haplotype<<std::endl;
