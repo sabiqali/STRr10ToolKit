@@ -413,5 +413,7 @@ methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b
 
     hts_base_mod_state_free(base_mod_states);
 
+    delete methylation_prob;
+
     return return_variable;
 }
