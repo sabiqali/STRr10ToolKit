@@ -374,7 +374,7 @@ methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b
     int out_position;
 
     std::cout<<"before basemod retrieval\n";
-    while(bam_next_basemod(b, base_mod_states, methylation_prob, max_mods, &out_position) > 0) { //iterating over the number of base mods found
+    while(bam_next_basemod(b, base_mod_states, mods, max_mods, &out_position) > 0) { //iterating over the number of base mods found
         std::cout<<"after basemod retrieval\n";
         read_pos_count += out_position + 1;
 
@@ -414,7 +414,7 @@ methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b
 
     hts_base_mod_state_free(base_mod_states);
 
-    delete methylation_prob;
+    //delete methylation_prob;
 
     return return_variable;
 }
