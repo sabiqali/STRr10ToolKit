@@ -358,7 +358,7 @@ methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b
 
     std::cout<<"before base_mod_state allocation\n";
     hts_base_mod_state* base_mod_states = hts_base_mod_state_alloc();
-    hts_base_mod* methylation_prob;
+    hts_base_mod* methylation_prob = new hts_base_mod;
 
     std::cout<<"before base_mod_state initialization\n";
     int initialize_base_mod_states = bam_parse_basemod(b, base_mod_states);
