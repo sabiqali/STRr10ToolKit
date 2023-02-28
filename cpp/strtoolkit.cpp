@@ -605,7 +605,7 @@ int main(int argc, char *argv[])  {
                 consensus_sequences = get_consensus_sequence(all_motifs);
 
                 for(auto &individual_read: window_output->window_aggregate) {
-                    //std::cout<<individual_read.query_name<<"\t"<<chr<<"\t"<<mean_ref_start<<"\t"<<mean_ref_end<<"\t"<<individual_read.region_start<<"\t"<<individual_read.region_end<<"\t"<<consensus_sequences[0]<<"\t"<<individual_read.interruption_motif<<"\t"<<individual_read.size<<"\t"<<individual_read.avg_methylation<<"\t"<<individual_read.min_methylation<<"\t"<<individual_read.max_methylation<<"\t"<<individual_read.haplotype<<std::endl;
+                    std::cout<<individual_read.query_name<<"\t"<<chr<<"\t"<<mean_ref_start<<"\t"<<mean_ref_end<<"\t"<<individual_read.region_start<<"\t"<<individual_read.region_end<<"\t"<<consensus_sequences[0]<<"\t"<<individual_read.interruption_motif<<"\t"<<individual_read.size<<"\t"<<individual_read.avg_methylation<<"\t"<<individual_read.min_methylation<<"\t"<<individual_read.max_methylation<<"\t"<<individual_read.haplotype<<std::endl;
                     //chromosome start end reference_length h1_str_length h2_str_length h1_upstream_methylation h1_in_repeat_methylation h1_downstream_methylation h2_upstream_methylation h2_in_repeat_methylation h2_downstream_methylation
                 }
 

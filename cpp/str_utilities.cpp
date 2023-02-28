@@ -372,12 +372,12 @@ methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b
     int out_position;
 
     while(bam_next_basemod(b, base_mod_states, mods, max_mods, &out_position) > 0) { //iterating over the number of base mods found
-        std::cout<<"inside basemod\n";
+        //std::cout<<"inside basemod\n";
         read_pos_count += out_position + 1;
 
         std::cout<<read_pos_count<<std::endl;
 
-        /*for(int i = 0; i < max_mod; i++) {
+        for(int i = 0; i < max_mod; i++) {
             if(mods[i]->modified_base = 'm') {
                 float probability_of_mod = mod[i]->qual != -1 ? ((float)mods[i]->qual/(float)255) : 0;
 
@@ -392,10 +392,10 @@ methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b
                 }
                 //TODO::account for methylation in upstream and downstream regions as well
             }
-        }*/
+        }
         
     }
-    /*if (read_pos_count > region_end) {
+    if (read_pos_count > region_end) {
         avg_methylation = total_methylation / (float)(region_end - region_start);
     }
     else if (read_pos_count < region_end && read_pos_count > region_start) {
@@ -403,7 +403,7 @@ methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b
     }
     else if (read_pos_count < region_start) {
         avg_methylation = 0;
-    }*/
+    }
 
     methylation_stats return_variable = {max_methylation,min_methylation,avg_methylation};
 
