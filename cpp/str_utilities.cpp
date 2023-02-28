@@ -358,7 +358,9 @@ methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b
 
     std::cout<<"before base_mod_state allocation\n";
     hts_base_mod_state* base_mod_states = hts_base_mod_state_alloc();
-    hts_base_mod* methylation_prob = new hts_base_mod;
+    //hts_base_mod* methylation_prob = new hts_base_mod;
+    const int max_mods = 5;
+    hts_base_mod mods[max_mods];
 
     std::cout<<"before base_mod_state initialization\n";
     int initialize_base_mod_states = bam_parse_basemod(b, base_mod_states);
@@ -369,15 +371,14 @@ methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b
         return return_variable;
     }
 
-    int n_mods;
-    int* pos;
+    int out_position;
 
     std::cout<<"before basemod retrieval\n";
-    while(bam_next_basemod(b, base_mod_states, methylation_prob, n_mods, pos) > 0) { //iterating over the number of base mods found
+    while(bam_next_basemod(b, base_mod_states, methylation_prob, max_mods, &out_position) > 0) { //iterating over the number of base mods found
         std::cout<<"after basemod retrieval\n";
-        read_pos_count += *pos + 1;
+        read_pos_count += out_position + 1;
 
-        std::cout<<*pos<<"\t"<<n_mods;
+        std::cout<<out_position<<std::endl;
 
         /*if(methylation_prob->modified_base = 'm') {
             float probability_of_mod = methylation_prob->qual != -1 ? ((float)methylation_prob->qual/(float)255) : 0;
