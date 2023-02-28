@@ -93,8 +93,8 @@ sizing_struct detect_size(std::string sequence_of_interest, std::string potentia
     return return_variable;
 }
 
-//methylation_stats detect_methylation(int region_start, int region_end, std::string mm_string, std::string prob_array) { //pass bam record here
-methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b) { //pass bam record here    
+//Legacy method to manually parse Methylation tags
+/*methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b) { //pass bam record here    
     float min_methylation = 0;
     float max_methylation = 0;
     float avg_methylation = 0;
@@ -176,7 +176,7 @@ methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b
     methylation_stats return_variable = {max_methylation,min_methylation,avg_methylation};
 
     return return_variable;
-}
+}*/
 
 decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
 
@@ -346,4 +346,68 @@ std::vector<std::string> get_consensus_sequence(std::vector<std::string> sequenc
     abpoa_free(ab); abpoa_free_para(abpt); 
 
     return output_msa;
+}
+
+methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b) {
+    float min_methylation = 0;
+    float max_methylation = 0;
+    float avg_methylation = 0;
+    float total_methylation = 0;
+
+    int read_pos_count = 0;
+
+    hts_base_mod_state* base_mod_states = hts_base_mod_state_alloc();
+    hts_base_mod* methylation_prob;
+
+    int initialize_base_mod_states = bam_parse_basemod(b, base_mod_states);
+
+    if(initialize_base_mod_states == -1) {
+        methylation_stats return_variable = {0,0,0};
+
+        return return_variable;
+    }
+
+    int n_mods;
+    int* pos;
+
+    while(bam_next_basemod(b, base_mod_states, methylation_prob, n_mods, pos) != 0) { //iterating over the number of base mods found
+        read_pos_count += *pos + 1;
+
+        std::cout<<*pos<<"\t"<<n_mods;
+
+        /*if(methylation_prob->modified_base = 'm') {
+            float probability_of_mod = methylation_prob->qual != -1 ? ((float)methylation_prob->qual/(float)255) : 0;
+
+            if (read_pos_count >= region_start && read_pos_count <= region_end) {
+                if (probability_of_mod > max_methylation) {
+                    max_methylation = probability_of_mod;
+                }
+                if (probability_of_mod < min_methylation) {
+                    min_methylation = probability_of_mod;
+                }
+                total_methylation += probability_of_mod;
+            }
+            //TODO::account for methylation in upstream and downstream regions as well
+        }
+        else {  //multiple basemods are not supported as of now
+            methylation_stats return_variable = {0,0,0};
+
+            return return_variable;
+        }*/
+    }
+    /*if (read_pos_count > region_end) {
+        avg_methylation = total_methylation / (float)(region_end - region_start);
+    }
+    else if (read_pos_count < region_end && read_pos_count > region_start) {
+        avg_methylation = total_methylation / (float)(read_pos_count - region_start);
+    }
+    else if (read_pos_count < region_start) {
+        avg_methylation = 0;
+    }*/
+
+    methylation_stats return_variable = {max_methylation,min_methylation,avg_methylation};
+
+    hts_base_mod_state_free(base_mod_states);
+
+    return return_variable;
 }
