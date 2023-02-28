@@ -377,9 +377,9 @@ methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b
 
         std::cout<<read_pos_count<<std::endl;
 
-        for(int i = 0; i < max_mod; i++) {
-            if(mods[i]->modified_base = 'm') {
-                float probability_of_mod = mod[i]->qual != -1 ? ((float)mods[i]->qual/(float)255) : 0;
+        for(int i = 0; i < max_mods; i++) {
+            if(mods[i].modified_base = 'm') {
+                float probability_of_mod = mods[i].qual != -1 ? ((float)mods[i].qual/(float)255) : 0;
 
                 if (read_pos_count >= region_start && read_pos_count <= region_end) {
                     if (probability_of_mod > max_methylation) {
