@@ -356,9 +356,11 @@ methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b
 
     int read_pos_count = 0;
 
+    std::cout<<"before base_mod_state allocation\n";
     hts_base_mod_state* base_mod_states = hts_base_mod_state_alloc();
     hts_base_mod* methylation_prob;
 
+    std::cout<<"before base_mod_state initialization\n";
     int initialize_base_mod_states = bam_parse_basemod(b, base_mod_states);
 
     if(initialize_base_mod_states == -1) {
@@ -370,6 +372,7 @@ methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b
     int n_mods;
     int* pos;
 
+    std::cout<<"before basemod retrieval\n";
     while(bam_next_basemod(b, base_mod_states, methylation_prob, n_mods, pos) != 0) { //iterating over the number of base mods found
         read_pos_count += *pos + 1;
 
