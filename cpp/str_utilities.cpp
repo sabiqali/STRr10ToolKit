@@ -356,13 +356,11 @@ methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b
 
     int read_pos_count = 0;
 
-    std::cout<<"before base_mod_state allocation\n";
     hts_base_mod_state* base_mod_states = hts_base_mod_state_alloc();
     //hts_base_mod* methylation_prob = new hts_base_mod;
     const int max_mods = 5;
     hts_base_mod mods[max_mods];
 
-    std::cout<<"before base_mod_state initialization\n";
     int initialize_base_mod_states = bam_parse_basemod(b, base_mod_states);
 
     if(initialize_base_mod_states == -1) {
@@ -373,32 +371,28 @@ methylation_stats detect_methylation(int region_start, int region_end, bam1_t *b
 
     int out_position;
 
-    std::cout<<"before basemod retrieval\n";
     while(bam_next_basemod(b, base_mod_states, mods, max_mods, &out_position) > 0) { //iterating over the number of base mods found
-        std::cout<<"after basemod retrieval\n";
         read_pos_count += out_position + 1;
 
         std::cout<<out_position<<std::endl;
 
-        /*if(methylation_prob->modified_base = 'm') {
-            float probability_of_mod = methylation_prob->qual != -1 ? ((float)methylation_prob->qual/(float)255) : 0;
+        /*for(int i = 0; i < max_mod; i++) {
+            if(mods[i]->modified_base = 'm') {
+                float probability_of_mod = mod[i]->qual != -1 ? ((float)mods[i]->qual/(float)255) : 0;
 
-            if (read_pos_count >= region_start && read_pos_count <= region_end) {
-                if (probability_of_mod > max_methylation) {
-                    max_methylation = probability_of_mod;
+                if (read_pos_count >= region_start && read_pos_count <= region_end) {
+                    if (probability_of_mod > max_methylation) {
+                        max_methylation = probability_of_mod;
+                    }
+                    if (probability_of_mod < min_methylation) {
+                        min_methylation = probability_of_mod;
+                    }
+                    total_methylation += probability_of_mod;
                 }
-                if (probability_of_mod < min_methylation) {
-                    min_methylation = probability_of_mod;
-                }
-                total_methylation += probability_of_mod;
+                //TODO::account for methylation in upstream and downstream regions as well
             }
-            //TODO::account for methylation in upstream and downstream regions as well
-        }
-        else {  //multiple basemods are not supported as of now
-            methylation_stats return_variable = {0,0,0};
-
-            return return_variable;
         }*/
+        
     }
     /*if (read_pos_count > region_end) {
         avg_methylation = total_methylation / (float)(region_end - region_start);
