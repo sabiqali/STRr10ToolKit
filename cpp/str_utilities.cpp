@@ -412,15 +412,29 @@ std::vector<methylation_stats> detect_methylation(int region_start, int region_e
         }
         
     }
-    if (read_pos_count > region_end) {
+    //in-region avg_methylation calculation
+    if (read_pos_count >= region_end)
         avg_methylation[1] = total_methylation[1] / (float)(region_end - region_start);
-    }
-    else if (read_pos_count < region_end && read_pos_count > region_start) {
+    else if (read_pos_count < region_end && read_pos_count >= region_start)
         avg_methylation[1] = total_methylation[1] / (float)(read_pos_count - region_start);
-    }
-    else if (read_pos_count < region_start) {
+    else if (read_pos_count < region_start)
         avg_methylation[1] = 0;
-    }
+
+    //downstream avg_methylation calculation
+    if(read_pos_count >= (region_end+3000))
+        avg_methylation[2] = total_methylation[2] / (float)(3000);
+    else if(read_pos_count < (region_end+3000) && read_pos_count >= region_end)
+        avg_methylation[2] = total_methylation[2] / (float)(read_pos_count - region_end);
+    else if(read_pos_count < region_end)
+        avg_methylation[2] = 0;
+
+    //upstream avg_methylation calculation
+    if(read_pos_count >= (region_start))
+        avg_methylation[0] = total_methylation[0] / (float)((region_start - 3000 >= 0) ? 3000 : region_start);
+    else if(read_pos_count < region_start && read_pos_count >= (region_start - 3000))
+        avg_methylation[0] = total_methylation[0] / (float)((region_start - 3000 >= 0) ? (read_pos_count - (region_start - 3000)): read_pos_count);
+    else if(read_pos_count < (region_start - 3000))
+        avg_methylation[0] = 0;
 
     //methylation_stats return_variable = {max_methylation,min_methylation,avg_methylation};
 
