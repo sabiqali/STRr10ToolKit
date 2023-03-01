@@ -50,7 +50,9 @@ struct methylation_stats {
 
 sizing_struct detect_size(std::string sequence_of_interest, std::string potential_str_sequence);
 
-methylation_stats detect_methylation(int read_start, int read_end, bam1_t *b);
+//methylation_stats detect_methylation(int read_start, int read_end, bam1_t *b); //method to do the methylation tags retrieval manually
+
+std::vector<methylation_stats> detect_methylation(int region_start, int region_end, bam1_t *b); //method to retrieve methylation tags using the htslib API: https://github.com/samtools/htslib/blob/develop/htslib/sam.h#L2260
 
 decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit);
 
