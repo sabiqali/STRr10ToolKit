@@ -97,6 +97,12 @@ struct per_read_struct {
     float min_methylation;
     float max_methylation;
     float avg_methylation;
+    float up_min_methylation;
+    float up_max_methylation;
+    float up_avg_methylation;
+    float down_min_methylation;
+    float down_max_methylation;
+    float down_avg_methylation;
     std::string interruption_motif;
     char strand;
     std::string query_name;
@@ -250,7 +256,7 @@ int main(int argc, char *argv[])  {
         chr_list.push_back(token);
     }
 
-    std::cout<<"read_name\tchromosome\tref_start\tref_end\tread_start\tread_end\tmotif\tinteruption_motif\tcount\tavg_methylation\tmin_methylation\tmax_methylation\thaplotype\n";
+    std::cout<<"read_name\tchromosome\tref_start\tref_end\tread_start\tread_end\tmotif\tinteruption_motif\tcount\thaplotype\tavg_methylation\tmin_methylation\tmax_methylation\tupstream_avg_methylation\tupstream_min_methylation\tupstream_max_methylation\tdownstream_avg_methylation\tdownstream_min_methylation\tdownstream_max_methylation\n";
 
     for (auto chr: chr_list) {
         int lower_limit = 0;
@@ -398,7 +404,7 @@ int main(int argc, char *argv[])  {
 
                                 sizing_struct sizing_result;
                                 decomposer_struct decomposer_result;
-                                methylation_stats methylation_results;
+                                std::vector<methylation_stats> methylation_results;
                                 int haplotype_of_read = 0;
 
                                 decomposer_result = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
@@ -448,9 +454,15 @@ int main(int argc, char *argv[])  {
                                     read_output->motif = decomposer_result.potential_sequence_in_window;
                                     read_output->strand = '+';
                                 }
-                                read_output->min_methylation = methylation_results.min_methylation;
-                                read_output->max_methylation = methylation_results.max_methylation;
-                                read_output->avg_methylation = methylation_results.avg_methylation;
+                                read_output->min_methylation = methylation_results[1].min_methylation;
+                                read_output->max_methylation = methylation_results[1].max_methylation;
+                                read_output->avg_methylation = methylation_results[1].avg_methylation;
+                                read_output->up_min_methylation = methylation_results[0].min_methylation;
+                                read_output->up_max_methylation = methylation_results[0].max_methylation;
+                                read_output->up_avg_methylation = methylation_results[0].avg_methylation;
+                                read_output->down_min_methylation = methylation_results[2].min_methylation;
+                                read_output->down_max_methylation = methylation_results[2].max_methylation;
+                                read_output->down_avg_methylation = methylation_results[2].avg_methylation;
                                 read_output->haplotype = haplotype_of_read;
 
                                 read_pos_counter += l;
@@ -605,7 +617,7 @@ int main(int argc, char *argv[])  {
                 consensus_sequences = get_consensus_sequence(all_motifs);
 
                 for(auto &individual_read: window_output->window_aggregate) {
-                    std::cout<<individual_read.query_name<<"\t"<<chr<<"\t"<<mean_ref_start<<"\t"<<mean_ref_end<<"\t"<<individual_read.region_start<<"\t"<<individual_read.region_end<<"\t"<<consensus_sequences[0]<<"\t"<<individual_read.interruption_motif<<"\t"<<individual_read.size<<"\t"<<individual_read.avg_methylation<<"\t"<<individual_read.min_methylation<<"\t"<<individual_read.max_methylation<<"\t"<<individual_read.haplotype<<std::endl;
+                    std::cout<<individual_read.query_name<<"\t"<<chr<<"\t"<<mean_ref_start<<"\t"<<mean_ref_end<<"\t"<<individual_read.region_start<<"\t"<<individual_read.region_end<<"\t"<<consensus_sequences[0]<<"\t"<<individual_read.interruption_motif<<"\t"<<individual_read.size<<"\t"<<individual_read.haplotype<<"\t"<<individual_read.avg_methylation<<"\t"<<individual_read.min_methylation<<"\t"<<individual_read.max_methylation<<"\t"<<individual_read.up_avg_methylation<<"\t"<<individual_read.up_min_methylation<<"\t"<<individual_read.up_max_methylation<<"\t"<<individual_read.down_avg_methylation<<"\t"<<individual_read.down_min_methylation<<"\t"<<individual_read.down_max_methylation<<std::endl;
                     //chromosome start end reference_length h1_str_length h2_str_length h1_upstream_methylation h1_in_repeat_methylation h1_downstream_methylation h2_upstream_methylation h2_in_repeat_methylation h2_downstream_methylation
                 }
 
