@@ -4,24 +4,39 @@ Toolkit to discover and characterize STRs. This toolkit can discover STR loci wi
 ## Dependencies
 Developed on Rust and C++17. Dependencies include:
 * [HTSlib](https://github.com/samtools/htslib)
+* [abPOA] (https://github.com/yangao07/abPOA/commit/bfe4ac0a4945ed3eadf68282776fc816b299947e) -> for now this particular commit has been tested and is supported. Support for the latest version shall be added soon. 
 
 ## Installation instructions
 
-### Cloning the repository
+### 1. Cloning the repository
 ```
 git clone --recursive https://github.com/sabiqali/strtoolkit.git
+cd ./strtoolkit
 git submodule init
 ```
 
-### Installing HTSlib
+### 2. Install Conda Dependencies
 ```
-cd ./strtoolkit/cpp/htslib
-make
+conda env create -f environment.yml
+conda activate strtoolkit
 ```
 
-### Installing the toolkit
+### 3. Installing HTSlib
 ```
-cd ../          //should be inside cpp folder before using make
+cd ~strtoolkit/cpp/htslib
+autoreconf -i  # Build the configure script and install files it uses
+./configure    # Optional but recommended, for choosing extra functionality
+make
+make install
+```
+
+### 4. Editing the Makefile
+* Please make sure you that the correct relative paths to ```htslib``` and ```abPOA``` are provided in the Makefile. 
+* Please make sure that the conda libs has been provided, the path to your conda environment that has been created and activated using the steps above can be accessed by the command ```echo $CONDA_PREFIX```.
+
+### 5. Installing the toolkit
+```
+cd ~/strtoolkit/cpp/abPOA          //should be inside cpp folder before using make
 make
 ```
 
@@ -66,9 +81,10 @@ whatshap haplotag -o haplotagged.bam --reference reference.fasta phased.vcf.gz a
 ## Output
 
 The output is in a ```.tsv``` format that will look something like this:
-| chromosome | start | end | reference_length | motif | interruption_motif | str_length | in_repeat_methylation | 
-| --- | --- | --- | --- | --- | --- | ---| --- |
+| read_name | chromosome | start | end | reference_length | motif | interruption_motif | str_length | haplotype | in_repeat_avg_methylation | in_repeat_min_methylation | in_repeat_max_methylation | upstream_avg_methylation | upstream_min_methylation | upstream_max_methylation | downstream_avg_methylation | downstream_min_methylation | downstream_max_methylation | 
+| --- | --- | --- | --- | --- | --- | ---| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
+* read_name: The read ID of the current read being processed.
 * chromosome: The chromosome on which the repeat locus has been found.
 * start: The reference based start position of the locus.
 * end: The reference based end position of the locus.
@@ -76,7 +92,16 @@ The output is in a ```.tsv``` format that will look something like this:
 * motif: The motif sequence discovered at the locus.
 * interruption_motif: If an interruption is detected in the repeat expansion, the motif in the interruption shall be shown here. Else, it shall show N/A
 * str_length: The estimated size of the repeat expansion. 
-* in_repeat_methylation: The average methylation in the repeat expansion at the locus. 
+* haplotype: The haplotype of the current read. NOTE: needs to be pre-processed by a tool which outputs ```HP``` bam tags. 
+* in_repeat_avg_methylation: The average methylation in the repeat expansion at the locus. 
+* in_repeat_min_methylation: The average methylation in the repeat expansion at the locus. 
+* in_repeat_max_methylation: The average methylation in the repeat expansion at the locus. 
+* upstream_avg_methylation: The average methylation in the repeat expansion at the locus. 
+* upstream_min_methylation: The average methylation in the repeat expansion at the locus. 
+* upstream_max_methylation: The average methylation in the repeat expansion at the locus. 
+* downstream_avg_methylation: The average methylation in the repeat expansion at the locus. 
+* downstream_min_methylation: The average methylation in the repeat expansion at the locus. 
+* downstream_max_methylation: The average methylation in the repeat expansion at the locus. 
 
 ## Contact
 
