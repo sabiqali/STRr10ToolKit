@@ -4,7 +4,7 @@ Toolkit to discover and characterize STRs. This toolkit can discover STR loci wi
 ## Dependencies
 Developed on Rust and C++17. Dependencies include:
 * [HTSlib](https://github.com/samtools/htslib)
-* [abPOA] (https://github.com/yangao07/abPOA/commit/bfe4ac0a4945ed3eadf68282776fc816b299947e) -> for now this particular commit has been tested and is supported. Support for the latest version shall be added soon. 
+* [abPOA](https://github.com/yangao07/abPOA/commit/bfe4ac0a4945ed3eadf68282776fc816b299947e) -> for now this particular commit has been tested and is supported. Support for the latest version shall be added soon. 
 
 ## Installation instructions
 
