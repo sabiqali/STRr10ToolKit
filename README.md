@@ -94,14 +94,14 @@ The output is in a ```.tsv``` format that will look something like this:
 * str_length: The estimated size of the repeat expansion. 
 * haplotype: The haplotype of the current read. NOTE: needs to be pre-processed by a tool which outputs ```HP``` bam tags. 
 * in_repeat_avg_methylation: The average methylation in the repeat expansion at the locus. 
-* in_repeat_min_methylation: The average methylation in the repeat expansion at the locus. 
-* in_repeat_max_methylation: The average methylation in the repeat expansion at the locus. 
-* upstream_avg_methylation: The average methylation in the repeat expansion at the locus. 
-* upstream_min_methylation: The average methylation in the repeat expansion at the locus. 
-* upstream_max_methylation: The average methylation in the repeat expansion at the locus. 
-* downstream_avg_methylation: The average methylation in the repeat expansion at the locus. 
-* downstream_min_methylation: The average methylation in the repeat expansion at the locus. 
-* downstream_max_methylation: The average methylation in the repeat expansion at the locus. 
+* in_repeat_min_methylation: The minimum methylation in the repeat expansion at the locus. 
+* in_repeat_max_methylation: The maximum methylation in the repeat expansion at the locus. 
+* upstream_avg_methylation: The average methylation in the region upstream of the locu. 
+* upstream_min_methylation: The minimum methylation in the region upstream of the locus. 
+* upstream_max_methylation: The maximum methylation in the region upstream of the locus. 
+* downstream_avg_methylation: The average methylation in the region downstream of the locus. 
+* downstream_min_methylation: The minimum methylation in the region downstream of the locus. 
+* downstream_max_methylation: The maximum methylation in the region downstream of the locus. 
 
 ## Contact
 
