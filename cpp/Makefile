@@ -1,10 +1,10 @@
 LIBS = -fopenmp -ftree-vectorize -labpoa -lz -lm -lz -lhts
 
-DEPS = str_utilities.h
+DEPS = str_utilities.h bloom_filter.h
 
 CC=g++
 
-OBJ = str_utilities.o strtoolkit.o 
+OBJ = str_utilities.o bloom_filter.o strtoolkit.o 
 
 HTS?=install
 
