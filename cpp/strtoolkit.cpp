@@ -252,6 +252,10 @@ int main(int argc, char *argv[])  {
     std::vector<std::string> chr_list;
     std::getline(chr_file, chr_list_line); //only 1 line in file is expected
 
+    //init bloom filter
+    bloom_filter bf_obj(220556452, 8, 20000000);
+    bf_obj.allocate_data();
+
     std::stringstream tmp_chr_list(chr_list_line);
     while (getline(tmp_chr_list, token, ' ')){
         chr_list.push_back(token);
@@ -286,6 +290,12 @@ int main(int argc, char *argv[])  {
 
                 //manip reads in region and send to the appropriate functions to get the results
                 if (b->core.tid < 0) continue;
+
+                //check if read is in bloom filter, if it is, skip it and go to the next. else add it to the filter
+                if(bf_obj.search(bam_get_qname(b)) == 1) 
+                    continue;
+                else
+                    bf_obj.insert(bam_get_qname(b))
 
                 int read_pos_counter = 0;
                 int ref_pos_counter = 0;
