@@ -157,7 +157,7 @@ bloom_filter::bloom_filter(int m, int k, int n) {
 }
 
 void bloom_filter::allocate_data() {
-  for(int i = 0; i < this->n; i++)
+  for(int i = 0; i < this->m; i++)
     this->prob_array.append("0");
 }
 
@@ -179,7 +179,7 @@ void bloom_filter::insert(char str[]) {
   //std::cout<<hash[0]<<std::endl;
 
   for(int i = 0; i < this->k; i++)
-    this->prob_array[hash[i]] = 1;
+    this->prob_array[hash[i]] = '1';
 
   return;
 }
