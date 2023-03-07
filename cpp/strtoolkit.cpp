@@ -19,6 +19,7 @@
 #include "htslib/htslib/faidx.h"
 #include "htslib/htslib/hts.h"
 #include "str_utilities.h"
+#include "bloom_filter.h"
 
 static const char *TOOLKIT_MESSAGE = 
 "Usage: ./strr10toolkit [OPTIONS] --bam input.bam --reference reference_genome.fasta --output_file_name output_file_name.tsv --output_directory /path/to/output/directory\n"
