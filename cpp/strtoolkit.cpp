@@ -295,7 +295,7 @@ int main(int argc, char *argv[])  {
                 if(bf_obj.search(bam_get_qname(b)) == 1) 
                     continue;
                 else
-                    bf_obj.insert(bam_get_qname(b))
+                    bf_obj.insert(bam_get_qname(b));
 
                 int read_pos_counter = 0;
                 int ref_pos_counter = 0;
