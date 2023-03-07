@@ -1,6 +1,7 @@
 #include <iostream>
 #include <functional>
 #include <string>
+#include <cstring>
 #ifndef BLOOM_FILTER_H
 #define BLOOM_FILTER_H
 

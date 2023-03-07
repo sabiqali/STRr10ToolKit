@@ -4,7 +4,7 @@ DEPS = str_utilities.h bloom_filter.h
 
 CC=g++
 
-OBJ = str_utilities.o bloom_filer.o strtoolkit.o 
+OBJ = str_utilities.o bloom_filter.o strtoolkit.o 
 
 HTS?=install
 
