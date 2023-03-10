@@ -292,10 +292,10 @@ int main(int argc, char *argv[])  {
                 if (b->core.tid < 0) continue;
 
                 //check if read is in bloom filter, if it is, skip it and go to the next. else add it to the filter
-                if(bf_obj.search(bam_get_qname(b)) == 1) 
+                /*if(bf_obj.search(bam_get_qname(b)) == 1) 
                     continue;
                 else
-                    bf_obj.insert(bam_get_qname(b));
+                    bf_obj.insert(bam_get_qname(b));*/
 
                 uint32_t read_pos_counter = 0;
                 uint32_t ref_pos_counter = 0;

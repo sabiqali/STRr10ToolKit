@@ -18,7 +18,6 @@
 #include <sstream>
 #include <getopt.h>
 #include <tuple>
-#include <stdint>
 //#include "./htslib/bam.h"
 #include "htslib/htslib/vcf.h"
 #include "htslib/htslib/sam.h"
