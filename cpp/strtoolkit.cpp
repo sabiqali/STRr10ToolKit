@@ -264,7 +264,7 @@ int main(int argc, char *argv[])  {
     std::cout<<"read_name\tchromosome\tref_start\tref_end\tread_start\tread_end\tmotif\tinteruption_motif\tcount\thaplotype\tavg_methylation\tmin_methylation\tmax_methylation\tupstream_avg_methylation\tupstream_min_methylation\tupstream_max_methylation\tdownstream_avg_methylation\tdownstream_min_methylation\tdownstream_max_methylation\n";
 
     for (auto chr: chr_list) {
-        std::vector<per_read_struct> overall_output;
+        std::vector<*per_read_struct> overall_output;
 
         //std::string region = chr+":"+std::to_string(lower_limit)+"-"+std::to_string(upper_limit);
 
