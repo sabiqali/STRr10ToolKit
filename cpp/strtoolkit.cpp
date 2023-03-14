@@ -430,6 +430,7 @@ int main(int argc, char *argv[])  {
             delete read_output;
         }
         //TODO::group reads together by insert calls on reference. Find read support, call consensus on that grouping. 
+        //std::vector<per_read_struct> read_group;
         std::vector<per_read_struct> read_group;
         std::vector<uint32_t> ref_starts;
         std::vector<uint32_t> ref_ends;
@@ -524,8 +525,8 @@ int main(int argc, char *argv[])  {
         }*/
         //otherwise, there aren't any STRs that pass all the filters. moving to the next window
 
-        for(auto &individual_read: overall_output)
-            std::cout<<individual_read.query_name<<"\t"<<chr<<"\t"<<individual_read.region_ref_start<<"\t"<<individual_read.region_ref_end<<"\t"<<individual_read.region_start<<"\t"<<individual_read.region_end<<"\t"<<individual_read.motif<<"\t"<<individual_read.interruption_motif<<"\t"<<individual_read.size<<"\t"<<individual_read.haplotype<<"\t"<<individual_read.avg_methylation<<"\t"<<individual_read.min_methylation<<"\t"<<individual_read.max_methylation<<"\t"<<individual_read.up_avg_methylation<<"\t"<<individual_read.up_min_methylation<<"\t"<<individual_read.up_max_methylation<<"\t"<<individual_read.down_avg_methylation<<"\t"<<individual_read.down_min_methylation<<"\t"<<individual_read.down_max_methylation<<std::endl;
+        //for(auto &individual_read: overall_output)
+        //    std::cout<<individual_read.query_name<<"\t"<<chr<<"\t"<<individual_read.region_ref_start<<"\t"<<individual_read.region_ref_end<<"\t"<<individual_read.region_start<<"\t"<<individual_read.region_end<<"\t"<<individual_read.motif<<"\t"<<individual_read.interruption_motif<<"\t"<<individual_read.size<<"\t"<<individual_read.haplotype<<"\t"<<individual_read.avg_methylation<<"\t"<<individual_read.min_methylation<<"\t"<<individual_read.max_methylation<<"\t"<<individual_read.up_avg_methylation<<"\t"<<individual_read.up_min_methylation<<"\t"<<individual_read.up_max_methylation<<"\t"<<individual_read.down_avg_methylation<<"\t"<<individual_read.down_min_methylation<<"\t"<<individual_read.down_max_methylation<<std::endl;
 
         hts_itr_destroy(itr);
     }
