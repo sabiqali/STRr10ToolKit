@@ -88,10 +88,10 @@ static const struct option longopts[] = {
 };
 
 struct per_read_struct {
-    int region_start;
-    int region_end;
-    int region_ref_start;
-    int region_ref_end;
+    uint32_t region_start;
+    uint32_t region_end;
+    uint32_t region_ref_start;
+    uint32_t region_ref_end;
     std::string motif;
     int haplotype;
     int size;
@@ -292,13 +292,13 @@ int main(int argc, char *argv[])  {
                 if (b->core.tid < 0) continue;
 
                 //check if read is in bloom filter, if it is, skip it and go to the next. else add it to the filter
-                if(bf_obj.search(bam_get_qname(b)) == 1) 
+                /*if(bf_obj.search(bam_get_qname(b)) == 1) 
                     continue;
                 else
-                    bf_obj.insert(bam_get_qname(b));
+                    bf_obj.insert(bam_get_qname(b));*/
 
-                int read_pos_counter = 0;
-                int ref_pos_counter = 0;
+                uint32_t read_pos_counter = 0;
+                uint32_t ref_pos_counter = 0;
                 auto query_sequence_encoded = bam_get_seq(b);
                 std::string query_sequence = "";
                 int map_quality = int(b->core.qual);
@@ -326,7 +326,7 @@ int main(int argc, char *argv[])  {
                     //int op = cigar[k]&16;       //old style htslib
                     //int l = cigar[k]>>4;        //old style htslib
                     int op = bam_cigar_op(cigar[k]);
-                    int l = bam_cigar_oplen(cigar[k]);
+                    uint32_t l = bam_cigar_oplen(cigar[k]);
                     switch(op) {
                         case BAM_CMATCH:
                             //printf("M");
@@ -604,8 +604,8 @@ int main(int argc, char *argv[])  {
                 //std::vector<per_read_struct> matching_reads; //needed for original code
                 int num_of_reads = window_output->window_aggregate.size();
                 //char all_motifs[num_of_reads][20];
-                int mean_ref_start = 0;
-                int mean_ref_end = 0;
+                uint32_t mean_ref_start = 0;
+                uint32_t mean_ref_end = 0;
                 int read_count = 0;
 		std::vector<std::string> all_motifs;
                 std::vector<std::string> consensus_sequences;
@@ -622,8 +622,8 @@ int main(int argc, char *argv[])  {
                     read_count += 1;
                 }
 
-                mean_ref_end = mean_ref_end/read_count;
-                mean_ref_start = mean_ref_start/read_count;
+                mean_ref_end = (uint32_t)(mean_ref_end/read_count);
+                mean_ref_start = (uint32_t)(mean_ref_start/read_count);
 
                 consensus_sequences = get_consensus_sequence(all_motifs);
 
