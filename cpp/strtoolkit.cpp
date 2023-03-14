@@ -40,6 +40,7 @@ static const char *TOOLKIT_MESSAGE =
 "      --max_repeat_size=NUM            maximum length of repeat motif. (Default: 6)\n"
 "      --min_map_quality=NUM            minimum mapping quality of individual reads.(Default: 20)\n"
 "      --discovery_sensitivity=NUM      minimum number of repeat units in the repeat expansion to be considered, to be used with min_ins_size.(Default: 10)\n"
+"      --grouping_sensitivity=NUM       the proximity of insert calls to be grouped into 1 insert call.(Default: 1000bp)\n"
 "  -t, --threads=NUM                    use NUM threads.(Default: 1)\n";
 
 namespace opt {
@@ -59,11 +60,12 @@ namespace opt {
     static int min_map_quality = 20;
     static int discovery_sensitivity = 10;
     static int num_threads = 1;
+    static int grouping_sensitivity = 1000;
 }
 
 static const char* shortopts = "b:r:o:d:v:c:t";
 
-enum { OPT_HELP = 1, OPT_VERSION, OPT_CHROMOSOME_FILE, OPT_MIN_INS_SIZE, OPT_IS_PHASED, OPT_MIN_READ_SUPPORT, OPT_WINDOW_SIZE, OPT_MIN_REPEAT_SIZE, OPT_MAX_REPEAT_SIZE, OPT_MIN_MAP_QUALITY, OPT_DISCOVERY_SENSITIVITY };
+enum { OPT_HELP = 1, OPT_VERSION, OPT_CHROMOSOME_FILE, OPT_MIN_INS_SIZE, OPT_IS_PHASED, OPT_MIN_READ_SUPPORT, OPT_WINDOW_SIZE, OPT_MIN_REPEAT_SIZE, OPT_MAX_REPEAT_SIZE, OPT_MIN_MAP_QUALITY, OPT_DISCOVERY_SENSITIVITY, OPT_GROUPING_SENSITIVITY };
 
 static const struct option longopts[] = {
     { "bam_file",              required_argument, NULL, 'b' },
@@ -81,6 +83,7 @@ static const struct option longopts[] = {
     { "max_repeat_size",       required_argument, NULL, OPT_MAX_REPEAT_SIZE },
     { "min_map_quality",       required_argument, NULL, OPT_MIN_MAP_QUALITY },
     { "discovery_sensitivity", required_argument, NULL, OPT_DISCOVERY_SENSITIVITY },
+    { "grouping_sensitivity",  required_argument, NULL, OPT_GROUPING_SENSITIVITY },
     { "threads",               required_argument, NULL, 't' },
     { "help",                  no_argument,       NULL, OPT_HELP },
     { "version",               no_argument,       NULL, OPT_VERSION },
@@ -136,6 +139,7 @@ void parse_align_options2(int argc, char** argv) {
             case OPT_MAX_REPEAT_SIZE: arg >> opt::max_repeat_size; break;
             case OPT_MIN_MAP_QUALITY: arg >> opt::min_map_quality; break;
             case OPT_DISCOVERY_SENSITIVITY: arg >> opt::discovery_sensitivity; break;
+            case OPT_GROUPING_SENSITIVITY: arg >> opt::grouping_sensitivity; break;
             case OPT_HELP:
                 std::cout << TOOLKIT_MESSAGE;
                 exit(EXIT_SUCCESS);
@@ -441,7 +445,7 @@ int main(int argc, char *argv[])  {
             uint32_t ref_end = individual_read.region_ref_end;                    //get ref_end position
 
             if(median_ref_start != 0 && median_ref_end != 0) {                           //if statement takes care of only the initial case when the median is 0 from outside the loop, in that case since that is the first element it is simply put into the variables with the else. and from the second element onwards, it is checked.
-                if((ref_start >= (median_ref_start - 1000) && ref_start <= (median_ref_start + 1000)) && (ref_end >= (median_ref_end - 1000) && ref_end <= (median_ref_end + 1000))) {                //if the ref start is within the boundaries of an acceptable reference call. here 3kbp. should make it variable?
+                if((ref_start >= (median_ref_start - opt::grouping_sensitivity) && ref_start <= (median_ref_start + opt::grouping_sensitivity)) && (ref_end >= (median_ref_end - opt::grouping_sensitivity) && ref_end <= (median_ref_end + opt::grouping_sensitivity))) {                //if the ref start is within the boundaries of an acceptable reference call. here 3kbp. should make it variable?
                     //insert the positions into the various variables. we take the median of the ref positions as the centroid of this cluster. 
                     ref_starts.push_back(ref_start);
                     ref_ends.push_back(ref_end);
