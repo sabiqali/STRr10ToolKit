@@ -264,7 +264,7 @@ int main(int argc, char *argv[])  {
     std::cout<<"read_name\tchromosome\tref_start\tref_end\tread_start\tread_end\tmotif\tinteruption_motif\tcount\thaplotype\tavg_methylation\tmin_methylation\tmax_methylation\tupstream_avg_methylation\tupstream_min_methylation\tupstream_max_methylation\tdownstream_avg_methylation\tdownstream_min_methylation\tdownstream_max_methylation\n";
 
     for (auto chr: chr_list) {
-        std::vector<*per_read_struct> overall_output;
+        std::vector<per_read_struct> overall_output;
 
         //std::string region = chr+":"+std::to_string(lower_limit)+"-"+std::to_string(upper_limit);
 
@@ -329,60 +329,6 @@ int main(int argc, char *argv[])  {
                     case BAM_CHARD_CLIP:
                         //printf("H");
                         break;
-                    /*case BAM_CSOFT_CLIP:
-                        //printf("S");
-                        if(l<opt::min_ins_size){
-                            read_pos_counter += l;
-                        }
-                        else {
-                            //call functions here
-                            std::cout<<query_sequence<<std::endl;
-                            std::cout<<b->core.l_qseq<<" "<<read_pos_counter<<" "<<l<<std::endl;
-                            std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
-
-                            std::cout<<"softclip: "<<sequence_of_interest<<std::endl;
-
-                            sizing_struct sizing_result;
-                            decomposer_struct decomposer_result;
-                            methylation_stats methylation_results;
-
-                            decomposer_result = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
-
-                            sizing_result = detect_size(sequence_of_interest,decomposer_result.potential_sequence_in_window);
-
-                            methylation_results = detect_methylation(read_pos_counter,l,b); 
-
-                            if(sizing_result.count<=opt::discovery_sensitivity) {
-                                read_pos_counter += l;
-                                break;
-                            }
-                            if(decomposer_result.potential_sequence_in_window.empty()) {
-                                read_pos_counter += l;
-                                break;
-                            }
-
-                            read_output->region_ref_start = ref_start_pos + ref_pos_counter;
-                            read_output->region_ref_end = read_output->region_ref_start + 1;
-                            read_output->region_start = read_pos_counter;
-                            read_output->region_end = read_pos_counter+l;
-                            read_output->interruption_motif = sizing_result.interruption_motif;
-                            read_output->size = sizing_result.count;
-                            read_output->query_name = bam_get_qname(b);
-                            if(bam_is_rev(b)) {
-                                read_output->motif = dna_reverse_complement(decomposer_result.potential_sequence_in_window);
-                                read_output->strand = '-';
-                            } 
-                            else {
-                                read_output->motif = decomposer_result.potential_sequence_in_window;
-                                read_output->strand = '+';
-                            }
-                            read_output->min_methylation = methylation_results.min_methylation;
-                            read_output->max_methylation = methylation_results.max_methylation;
-                            read_output->avg_methylation = methylation_results.avg_methylation;
-
-                            read_pos_counter += l;
-                        }
-                        break;*/
                     case BAM_CDEL:
                         //printf("D"); does this span positions on the read???
                         ref_pos_counter += l;
@@ -472,68 +418,13 @@ int main(int argc, char *argv[])  {
                             read_pos_counter += l;
                         }
                         break;
-                    /*case BAM_CREF_SKIP:
-                        //printf("S");
-                        if(l<opt::min_ins_size){
-                            read_pos_counter += l;
-                        }
-                        else {
-                            //call functions here
-                            std::cout<<query_sequence<<std::endl;
-                            std::cout<<b->core.l_qseq<<" "<<read_pos_counter<<" "<<l<<std::endl;
-                            std::string sequence_of_interest = query_sequence.substr(read_pos_counter,l);
-
-                            std::cout<<"refskip: "<<sequence_of_interest<<std::endl;
-                            break;
-
-                            sizing_struct sizing_result;
-                            decomposer_struct decomposer_result;
-                            methylation_stats methylation_results;
-
-                            decomposer_result = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
-
-                            sizing_result = detect_size(sequence_of_interest,decomposer_result.potential_sequence_in_window);
-
-                            methylation_results = detect_methylation(read_pos_counter,l,b); 
-
-                            if(sizing_result.count<=opt::discovery_sensitivity) {
-                                read_pos_counter += l;
-                                break;
-                            }
-                            if(decomposer_result.potential_sequence_in_window.empty()) {
-                                read_pos_counter += l;
-                                break;
-                            }
-
-                            read_output->region_ref_start = ref_start_pos + ref_pos_counter;
-                            read_output->region_ref_end = read_output->region_ref_start + 1;
-                            read_output->region_start = read_pos_counter;
-                            read_output->region_end = read_pos_counter+l;
-                            read_output->interruption_motif = sizing_result.interruption_motif;
-                            read_output->size = sizing_result.count;
-                            read_output->query_name = bam_get_qname(b);
-                            if(bam_is_rev(b)) {
-                                read_output->motif = dna_reverse_complement(decomposer_result.potential_sequence_in_window);
-                                read_output->strand = '-';
-                            } 
-                            else {
-                                read_output->motif = decomposer_result.potential_sequence_in_window;
-                                read_output->strand = '+';
-                            }
-                            read_output->min_methylation = methylation_results.min_methylation;
-                            read_output->max_methylation = methylation_results.max_methylation;
-                            read_output->avg_methylation = methylation_results.avg_methylation;
-
-                            read_pos_counter += l;
-                        }
-                        break;*/
                     default:
                         //printf("?");
                         std::cerr<<"STRr10ToolKit::Cigar_Parse: cannot parse cigar element\n";
                 }
             }
             if(!read_output->motif.empty()) {
-                overall_output.push_back(read_output);
+                overall_output.push_back(*read_output);
             }
 
             delete read_output;
