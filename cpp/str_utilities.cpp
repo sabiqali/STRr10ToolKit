@@ -67,9 +67,9 @@ uint32_t get_median(std::vector<uint32_t> coordinates_array) {
     int size = coordinates_array.size();
 
     if (coordinates_array.size() % 2 != 0)
-        return (uint32_t)arr[size/2];
+        return (uint32_t)coordinates_array[size/2];
     else
-        return (uint32_t)(arr[(size-1)/2] + arr[size/2])/2.0;
+        return (uint32_t)(coordinates_array[(size-1)/2] + coordinates_array[size/2])/2.0;
 }
 
 sizing_struct detect_size(std::string sequence_of_interest, std::string potential_str_sequence) {
