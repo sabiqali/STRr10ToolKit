@@ -432,7 +432,7 @@ int main(int argc, char *argv[])  {
         //TODO::group reads together by insert calls on reference. Find read support, call consensus on that grouping. 
         std::vector<per_read_struct> read_group;
         std::vector<uint32_t> ref_starts;
-        std::vector<uint32_t> ref_end;
+        std::vector<uint32_t> ref_ends;
         uint32_t median_ref_start = 0;
         uint32_t median_ref_end = 0;
         for(auto &individual_read: overall_output) {        //iterate over the reads from the region that is being analysed here
