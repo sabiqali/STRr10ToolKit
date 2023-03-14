@@ -441,11 +441,11 @@ int main(int argc, char *argv[])  {
             uint32_t ref_end = individual_read.region_ref_end;                    //get ref_end position
 
             if(median_ref_start != 0 && median_ref_end != 0) {                           //if statement takes care of only the initial case when the median is 0 from outside the loop, in that case since that is the first element it is simply put into the variables with the else. and from the second element onwards, it is checked.
-                if((ref_start >= (median_ref_start - 3000) || ref_start <= (median_ref_start + 3000)) && (ref_end >= (median_ref_end - 3000) || ref_end <= (median_ref_end + 3000))) {                //if the ref start is within the boundaries of an acceptable reference call. here 3kbp. should make it variable?
+                if((ref_start >= (median_ref_start - 1000) && ref_start <= (median_ref_start + 1000)) && (ref_end >= (median_ref_end - 1000) && ref_end <= (median_ref_end + 1000))) {                //if the ref start is within the boundaries of an acceptable reference call. here 3kbp. should make it variable?
                     //insert the positions into the various variables. we take the median of the ref positions as the centroid of this cluster. 
                     ref_starts.push_back(ref_start);
                     ref_ends.push_back(ref_end);
-                    read_group.push_back(*individual_read);
+                    read_group.push_back(individual_read);
 
                     median_ref_start = get_median(ref_starts);
                     median_ref_end = get_median(ref_ends);
@@ -460,7 +460,7 @@ int main(int argc, char *argv[])  {
                         for(auto &individual_read_in_group: read_group) {
                             all_motifs.push_back(individual_read_in_group.motif);
                         }
-
+			
                         consensus_sequences = get_consensus_sequence(all_motifs);
 
                         for(auto &individual_read_in_group: read_group) {
@@ -478,7 +478,7 @@ int main(int argc, char *argv[])  {
                     median_ref_end = ref_end;
                     ref_starts.push_back(ref_start);
                     ref_ends.push_back(ref_end);
-                    read_group.push_back(*individual_read);
+                    read_group.push_back(individual_read);
                 }
 
             }
@@ -487,7 +487,7 @@ int main(int argc, char *argv[])  {
                 median_ref_end = ref_end;
                 ref_starts.push_back(ref_start);
                 ref_ends.push_back(ref_end);
-                read_group.push_back(*individual_read);
+                read_group.push_back(individual_read);
             }
         }
         
