@@ -62,6 +62,16 @@ std::string dna_reverse_complement(std::string seq) {
     return seq;
 }
 
+uint32_t get_median(std::vector<uint32_t> coordinates_array) {
+    sort(coordinates_array.begin(), coordinates_array.end());
+    int size = coordinates_array.size();
+
+    if (coordinates_array.size() % 2 != 0)
+        return (uint32_t)arr[size/2];
+    else
+        return (uint32_t)(arr[(size-1)/2] + arr[size/2])/2.0;
+}
+
 sizing_struct detect_size(std::string sequence_of_interest, std::string potential_str_sequence) {
     int rindex = 0;
     int lindex = 0;

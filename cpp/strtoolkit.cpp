@@ -430,6 +430,65 @@ int main(int argc, char *argv[])  {
             delete read_output;
         }
         //TODO::group reads together by insert calls on reference. Find read support, call consensus on that grouping. 
+        std::vector<per_read_struct> read_group;
+        std::vector<uint32_t> ref_starts;
+        std::vector<uint32_t> ref_end;
+        uint32_t median_ref_start = 0;
+        uint32_t median_ref_end = 0;
+        for(auto &individual_read: overall_output) {        //iterate over the reads from the region that is being analysed here
+            uint32_t ref_start = individual_read.region_ref_start;                //get ref_start position
+            uint32_t ref_end = individual_read.region_ref_end;                    //get ref_end position
+
+            if(median_ref_start != 0 && median_ref_end != 0) {                           //if statement takes care of only the initial case when the median is 0 from outside the loop, in that case since that is the first element it is simply put into the variables with the else. and from the second element onwards, it is checked.
+                if((ref_start >= (median_ref_start - 3000) || ref_start <= (median_ref_start + 3000)) && (ref_end >= (median_ref_end - 3000) || ref_end <= (median_ref_end + 3000))) {                //if the ref start is within the boundaries of an acceptable reference call. here 3kbp. should make it variable?
+                    //insert the positions into the various variables. we take the median of the ref positions as the centroid of this cluster. 
+                    ref_starts.push_back(ref_start);
+                    ref_ends.push_back(ref_end);
+                    read_group.push_back(*individual_read);
+
+                    median_ref_start = get_median(ref_starts);
+                    median_ref_end = get_median(ref_ends);
+                }
+                else {  //if the ref start & position is outside the boundaries set above.
+                    //we need to output the group of reads that have been pushed into the vector if they are groups and output it with the consensus sequence if the number of reads is greater than the read support. 
+                    if(read_group.size() > opt::min_read_support) {
+
+                        std::vector<std::string> all_motifs;
+                        std::vector<std::string> consensus_sequences;
+
+                        for(auto &individual_read_in_group: read_group) {
+                            all_motifs.push_back(individual_read_in_group.motif);
+                        }
+
+                        consensus_sequences = get_consensus_sequence(all_motifs);
+
+                        for(auto &individual_read_in_group: read_group) {
+                            std::cout<<individual_read_in_group.query_name<<"\t"<<chr<<"\t"<<median_ref_start<<"\t"<<median_ref_end<<"\t"<<individual_read_in_group.region_start<<"\t"<<individual_read_in_group.region_end<<"\t"<<consensus_sequences[0]<<"\t"<<individual_read_in_group.interruption_motif<<"\t"<<individual_read_in_group.size<<"\t"<<individual_read_in_group.haplotype<<"\t"<<individual_read_in_group.avg_methylation<<"\t"<<individual_read_in_group.min_methylation<<"\t"<<individual_read_in_group.max_methylation<<"\t"<<individual_read_in_group.up_avg_methylation<<"\t"<<individual_read_in_group.up_min_methylation<<"\t"<<individual_read_in_group.up_max_methylation<<"\t"<<individual_read_in_group.down_avg_methylation<<"\t"<<individual_read_in_group.down_min_methylation<<"\t"<<individual_read_in_group.down_max_methylation<<std::endl;
+                        }
+                    }
+
+                    //clear the temporary vectors after use
+                    read_group.clear();
+                    ref_starts.clear();
+                    ref_ends.clear();
+
+                    //since we have a new ref start and end position that was outside the previous bounds and hasn't been processed, it is added to the variables and the process continues. 
+                    median_ref_start = ref_start;
+                    median_ref_end = ref_end;
+                    ref_starts.push_back(ref_start);
+                    ref_ends.push_back(ref_end);
+                    read_group.push_back(*individual_read);
+                }
+
+            }
+            else { //initial case of initialising the arrays.
+                median_ref_start = ref_start;
+                median_ref_end = ref_end;
+                ref_starts.push_back(ref_start);
+                ref_ends.push_back(ref_end);
+                read_group.push_back(*individual_read);
+            }
+        }
         
         /*if(max_read_support >= opt::min_read_support) {
             int num_of_reads = window_output->window_aggregate.size();

@@ -62,5 +62,7 @@ int get_haplotag(bam1_t *b);
 
 std::vector<std::string> get_consensus_sequence(std::vector<std::string> sequences);  //m is rows and n is columns
 
+uint32_t get_median(std::vector<uint32_t> coordinates_array);
+
 #endif
 
