@@ -99,13 +99,15 @@ sizing_struct detect_size(std::string sequence_of_interest, std::string potentia
                 int_count++;
             }
             int_count++;
+            if(int_count > 2)
+                break;
         }
 
         lindex = rindex;
         ++rindex;
     }
 
-    sizing_struct return_variable = {count+1,int_motif}; //the +1 compensates for the initial skipped find
+    sizing_struct return_variable = {count+1,int_motif,int_count}; //the +1 compensates for the initial skipped find
 
     return return_variable;
 }
