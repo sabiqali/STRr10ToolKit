@@ -200,6 +200,7 @@ sizing_struct detect_size(std::string sequence_of_interest, std::string potentia
 decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
 
     std::map<std::string, int> subsequences;
+    sizing_struct sizing_result;
 
     for(int motif_length=lower_limit ; motif_length <= upper_limit ; motif_length++) {
         int lower_window_var = 0;
@@ -223,14 +224,18 @@ decomposer_struct decompose_string(std::string sequence_of_interest, int lower_l
     int max_value=0;
     std::string max_key;
 
-    for(auto &entry: subsequences) {
-        if(entry.second > max_value) {
-            max_key = entry.first;
-            max_value = entry.second;
+    do {
+        for(auto &entry: subsequences) {
+            if(entry.second > max_value) {
+                max_key = entry.first;
+                max_value = entry.second;
+            }
         }
-    }
+        sizing_result = detect_size(sequence_of_interest,max_key);
+        subsequences[max_key] = 0;
+    } while (sizing_result.int_occurances > 2);
 
-    decomposer_struct return_variable = {max_key,max_value};
+    decomposer_struct return_variable = {max_key,max_value,sizing_result};
 
     return return_variable;
 }
