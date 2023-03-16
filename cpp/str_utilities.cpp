@@ -79,6 +79,7 @@ sizing_struct detect_size(std::string sequence_of_interest, std::string potentia
     int motif_length = potential_str_sequence.length();
     int count = 0;
     std::string int_motif;
+    int int_count = 0;
 
     while ((rindex = sequence_of_interest.find(potential_str_sequence, rindex)) != std::string::npos) { //could implement KMP algorithm here to get indeces in O(m)
         if(lindex == 0) {
@@ -90,8 +91,13 @@ sizing_struct detect_size(std::string sequence_of_interest, std::string potentia
             count++;
         }
         else {
-            int_motif = sequence_of_interest.substr(lindex+motif_length,rindex-(lindex+motif_length)); //the addition in first parameter is to get past the existing motif at the left index, to the start of the interruption. 
-            count++;
+            if(int_count == 0) {
+                int_motif = sequence_of_interest.substr(lindex+motif_length,rindex-(lindex+motif_length)); //the addition in first parameter is to get past the existing motif at the left index, to the start of the interruption. 
+                if(int_motif.length() <= 50)
+                    count++;
+                int_count++;
+            }
+
         }
 
         lindex = rindex;
