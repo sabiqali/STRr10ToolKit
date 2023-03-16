@@ -92,13 +92,13 @@ sizing_struct detect_size(std::string sequence_of_interest, std::string potentia
         }
         else {
             if(int_count == 0) {
-                if(rindex-(lindex+motif_length) <= 50) {
+                if((rindex-(lindex+motif_length)) <= 50) {
                     int_motif = sequence_of_interest.substr(lindex+motif_length,rindex-(lindex+motif_length)); //the addition in first parameter is to get past the existing motif at the left index, to the start of the interruption. 
                     count++;
                 }
                 int_count++;
             }
-            
+            int_count++;
         }
 
         lindex = rindex;
