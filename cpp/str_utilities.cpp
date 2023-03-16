@@ -78,7 +78,7 @@ sizing_struct detect_size(std::string sequence_of_interest, std::string potentia
 
     int motif_length = potential_str_sequence.length();
     int count = 0;
-    std::string int_motif;
+    std::string int_motif = "";
     int int_count = 0;
 
     while ((rindex = sequence_of_interest.find(potential_str_sequence, rindex)) != std::string::npos) { //could implement KMP algorithm here to get indeces in O(m)
