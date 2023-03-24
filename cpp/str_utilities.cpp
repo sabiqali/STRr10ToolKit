@@ -197,7 +197,8 @@ sizing_struct detect_size(std::string sequence_of_interest, std::string potentia
     return return_variable;
 }*/
 
-decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
+//legacy decomposer. trying to refactor this in the new function
+/*decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
 
     std::map<std::string, int> subsequences;
     sizing_struct sizing_result;
@@ -224,21 +225,111 @@ decomposer_struct decompose_string(std::string sequence_of_interest, int lower_l
     int max_value=0;
     std::string max_key;
 
-    do {
+    for(auto &entry: subsequences) {
+        if(entry.second > max_value) {
+            max_key = entry.first;
+            max_value = entry.second;
+        }
+    }
+
+    decomposer_struct return_variable = {max_key,max_value};
+
+    return return_variable;
+}*/
+
+decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
+
+    std::map<std::string, int> subsequences;
+    sizing_struct sizing_result;
+
+    for(int motif_length=lower_limit ; motif_length <= upper_limit ; motif_length++) {
+        int lower_window_var = 0;
+        int upper_window_var = motif_length;
+
+        while(upper_window_var <= sequence_of_interest.length()) {
+            std::string sequence_in_window = sequence_of_interest.substr(lower_window_var,motif_length);
+
+            if (subsequences.find(sequence_in_window) == subsequences.end()) {
+                subsequences.insert(make_pair(sequence_in_window, 1));
+            }
+            else {
+                subsequences[sequence_in_window]+=1;
+            }
+
+            lower_window_var++;
+            upper_window_var++;
+        }
+    }
+
+    int max_value=0;
+    std::string max_key;
+    int insert_span = 0;
+    int overall_max_value=0;
+    std::string overall_max_key;
+
+    for(int motif_length=lower_limit ; motif_length <= upper_limit ; motif_length++) {
         for(auto &entry: subsequences) {
-            if(entry.second > max_value) {
+            if(entry.second > max_value && entry.first == motif_length) {
                 max_key = entry.first;
                 max_value = entry.second;
             }
         }
-        sizing_result = detect_size(sequence_of_interest,max_key);
-        subsequences[max_key] = 0;
-    } while (sizing_result.int_occurances > 2);
+        int tmp_span = (int)((max_value * max_key.length() * 100) / sequence_of_interest.length());
+        if(tmp_span > insert_span) {
+            insert_span = tmp_span;
+            overall_max_value = max_value;
+            overall_max_key = max_key;
+        }
+    }
 
-    decomposer_struct return_variable = {max_key,max_value,sizing_result};
+    decomposer_struct return_variable = {overall_max_key,overall_max_value};
 
     return return_variable;
 }
+
+//new decomposer algorithm
+/*decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
+
+    std::vector<std::map<int, std::string>> all_k_mers;
+    std::vector<std::tuple<std::string,int> k_mer_max_detected;
+
+    //getting all the k-mers for the different values of lower_limit<=k<=upper_limit
+    for(int motif_length=lower_limit ; motif_length <= upper_limit ; motif_length++) {
+        int lower_window_var = 0;
+        int upper_window_var = motif_length;
+
+        std::map<int,std::string> k_mer_index;
+
+        while(upper_window_var <= sequence_of_interest.length()) {
+            std::string k_mer = sequence_of_interest.substr(lower_window_var,motif_length);
+
+            k_mer_index.insert({lower_window_var,k_mer});
+            
+            lower_window_var++;
+            upper_window_var++;
+        }
+
+        all_k_mers.push_back(k_mer_index);
+    }
+
+    int max_value=0;
+    std::string max_key;
+
+    for(auto &entry: subsequences) {
+        if(entry.second > max_value) {
+            max_key = entry.first;
+            max_value = entry.second;
+        }
+    }
+
+    for(auto kmer_index_map: all_k_mers) {
+        //go through index by index to get max per motif length
+    }
+
+    decomposer_struct return_variable = {max_key,max_value};
+
+    return return_variable;
+}*/
 
 int get_haplotag(bam1_t *b) {
     int haplotag = bam_aux2i(bam_aux_get(b, "HP")); //encoded as HP:i:1 or HP:i:2 by Whatshap

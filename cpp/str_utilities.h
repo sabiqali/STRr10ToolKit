@@ -35,7 +35,6 @@ struct sizing_struct {
 struct decomposer_struct {
     std::string potential_sequence_in_window;
     int potential_count_in_window;
-    sizing_struct sizing_result;
 };
 
 struct methylation_stats {

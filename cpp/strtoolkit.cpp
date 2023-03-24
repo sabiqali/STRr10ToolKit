@@ -368,8 +368,7 @@ int main(int argc, char *argv[])  {
                                 break;
                             }
 
-                            //removing this as sizing is included in discovery
-                            //sizing_result = detect_size(sequence_of_interest,decomposer_result.potential_sequence_in_window); 
+                            sizing_result = detect_size(sequence_of_interest,decomposer_result.potential_sequence_in_window); 
 
                             methylation_results = detect_methylation(read_pos_counter,l,b); 
 
@@ -392,10 +391,8 @@ int main(int argc, char *argv[])  {
                             read_output->region_ref_end = read_output->region_ref_start + 1;
                             read_output->region_start = read_pos_counter;
                             read_output->region_end = read_pos_counter+l;
-                            //read_output->interruption_motif = sizing_result.int_occurances > 2 ? sizing_result.interruption_motif : "";
-                            //read_output->size = sizing_result.count;
-                            read_output->interruption_motif = decomposer_result.sizing_result.interruption_motif;
-                            read_output->size = decomposer_result.sizing_result.count;
+                            read_output->interruption_motif = sizing_result.int_occurances > 2 ? sizing_result.interruption_motif : "";
+                            read_output->size = sizing_result.count;
                             read_output->query_name = bam_get_qname(b);
                             if(bam_is_rev(b)) {
                                 read_output->motif = dna_reverse_complement(decomposer_result.potential_sequence_in_window);
