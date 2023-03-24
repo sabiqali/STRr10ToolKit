@@ -269,7 +269,7 @@ decomposer_struct decompose_string(std::string sequence_of_interest, int lower_l
 
     for(int motif_length=lower_limit ; motif_length <= upper_limit ; motif_length++) {
         for(auto &entry: subsequences) {
-            if(entry.second > max_value && entry.first == motif_length) {
+            if(entry.second > max_value && entry.first.length() == motif_length) {
                 max_key = entry.first;
                 max_value = entry.second;
             }
