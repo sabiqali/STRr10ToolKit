@@ -362,6 +362,7 @@ int main(int argc, char *argv[])  {
                             int haplotype_of_read = -1;
 
                             decomposer_result = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
+                            std::cout<<decomposer_result.potential_sequence_in_window<<std::endl;
                             //TODO::have to filter out homopolymer runs here.
                             if(decomposer_result.potential_sequence_in_window.find_first_not_of(decomposer_result.potential_sequence_in_window[0]) == std::string::npos) {
                                 read_pos_counter += l;
