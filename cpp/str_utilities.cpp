@@ -263,7 +263,7 @@ decomposer_struct decompose_string(std::string sequence_of_interest, int lower_l
 
     int max_value=0;
     std::string max_key;
-    int insert_span = 0;
+    float insert_span = 0;
     int overall_max_value=0;
     std::string overall_max_key;
 
@@ -274,7 +274,7 @@ decomposer_struct decompose_string(std::string sequence_of_interest, int lower_l
                 max_value = entry.second;
             }
         }
-        int tmp_span = (int)((max_value * max_key.length() * 100) / sequence_of_interest.length());
+        float tmp_span = (max_value * max_key.length() * 100) / sequence_of_interest.length();
         if(tmp_span > insert_span) {
             insert_span = tmp_span;
             overall_max_value = max_value;
