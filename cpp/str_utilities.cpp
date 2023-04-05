@@ -197,11 +197,10 @@ sizing_struct detect_size(std::string sequence_of_interest, std::string potentia
     return return_variable;
 }*/
 
-//legacy decomposer. trying to refactor this in the new function
-/*decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
+//legacy decomposer. from commit fed1543fea64f23c2c5346732942f8fda00ce3d4
+decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
 
     std::map<std::string, int> subsequences;
-    sizing_struct sizing_result;
 
     for(int motif_length=lower_limit ; motif_length <= upper_limit ; motif_length++) {
         int lower_window_var = 0;
@@ -235,9 +234,10 @@ sizing_struct detect_size(std::string sequence_of_interest, std::string potentia
     decomposer_struct return_variable = {max_key,max_value};
 
     return return_variable;
-}*/
+}
 
-decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
+//new decomposer this needs to be error corrected. 
+/*decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
 
     std::map<std::string, int> subsequences;
     sizing_struct sizing_result;
@@ -285,7 +285,7 @@ decomposer_struct decompose_string(std::string sequence_of_interest, int lower_l
     decomposer_struct return_variable = {overall_max_key,overall_max_value};
 
     return return_variable;
-}
+}*/
 
 //new decomposer algorithm
 /*decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
