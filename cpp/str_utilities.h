@@ -26,15 +26,14 @@
 #include <stdint.h>
 #include "abPOA/include/abpoa.h"
 
-struct sizing_struct {
-    int count;
-    std::string interruption_motif;
-    int int_occurances;
-};
-
 struct decomposer_struct {
     std::string potential_sequence_in_window;
     int potential_count_in_window;
+};
+
+struct sizing_struct {
+    int count;
+    std::string interruption_motif;
 };
 
 struct methylation_stats {

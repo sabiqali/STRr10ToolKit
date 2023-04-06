@@ -362,14 +362,19 @@ int main(int argc, char *argv[])  {
                             int haplotype_of_read = -1;
 
                             decomposer_result = decompose_string(sequence_of_interest,opt::min_repeat_size,opt::max_repeat_size);
-                            
                             //TODO::have to filter out homopolymer runs here.
                             if(decomposer_result.potential_sequence_in_window.find_first_not_of(decomposer_result.potential_sequence_in_window[0]) == std::string::npos) {
                                 read_pos_counter += l;
                                 break;
                             }
 
-                            sizing_result = detect_size(sequence_of_interest,decomposer_result.potential_sequence_in_window); 
+                            sizing_result = detect_size(sequence_of_interest,decomposer_result.potential_sequence_in_window);
+
+                            /*char *mm_str = bam_aux2Z(bam_aux_get(b, "MM"));
+                            char *probability_array = bam_aux2Z(bam_aux_get(b, "ML"));
+
+                            std::cout<<*mm_str<<std::endl;
+                            std::cout<<*probability_array<<std::emdl;*/
 
                             methylation_results = detect_methylation(read_pos_counter,l,b); 
 
@@ -392,7 +397,7 @@ int main(int argc, char *argv[])  {
                             read_output->region_ref_end = read_output->region_ref_start + 1;
                             read_output->region_start = read_pos_counter;
                             read_output->region_end = read_pos_counter+l;
-                            read_output->interruption_motif = sizing_result.int_occurances > 2 ? sizing_result.interruption_motif : "";
+                            read_output->interruption_motif = sizing_result.interruption_motif;
                             read_output->size = sizing_result.count;
                             read_output->query_name = bam_get_qname(b);
                             if(bam_is_rev(b)) {
