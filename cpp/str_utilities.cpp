@@ -211,17 +211,31 @@ decomposer_struct decompose_string(std::string sequence_of_interest, int lower_l
         }
     }
 
-    int max_value=0;
-    std::string max_key;
+    int spanned = 0;
+    int final_max_value = 0;
+    std::string final_max_key;
 
-    for(auto &entry: subsequences) {
-        if(entry.second > max_value) {
-            max_key = entry.first;
-            max_value = entry.second;
+    for(int motif_length=lower_limit ; motif_length <= upper_limit ; motif_length++) {
+        int max_value=0;
+        std::string max_key;
+
+        for(auto &entry: subsequences) {
+            if(entry.second > max_value && entry.first.length() == motif_length) {
+                max_key = entry.first;
+                max_value = entry.second;
+            }
+        }
+
+        int tmp_spanned = (max_key.length() * max_value * 100)/sequence_of_interest.length();
+
+        if(tmp_spanned > spanned) {
+            final_max_key = max_key;
+            final_max_value = max_value;
+            spanned = tmp_spanned;
         }
     }
 
-    decomposer_struct return_variable = {max_key,max_value};
+    decomposer_struct return_variable = {final_max_key,final_max_value};
 
     return return_variable;
 }
