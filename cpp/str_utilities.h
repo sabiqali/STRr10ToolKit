@@ -24,6 +24,7 @@
 #include "htslib/htslib/faidx.h"
 #include "htslib/htslib/hts.h"
 #include <stdint.h>
+#include<bits/stdc++.h>
 #include "abPOA/include/abpoa.h"
 
 struct decomposer_struct {

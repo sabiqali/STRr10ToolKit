@@ -149,19 +149,17 @@ std::vector<int> KMPSearch(std::string pat, std::string txt)
     return indeces;
 }
 
-// Returns the longest repeating non-overlapping
-// substring in str
 std::string longestRepeatedSubstring(std::string str)
 {
     int n = str.length();
     int LCSRe[n+1][n+1];
-
+ 
     // Setting all to 0
     memset(LCSRe, 0, sizeof(LCSRe));
-
+ 
     std::string res; // To store result
     int res_length  = 0; // To store length of result
-
+ 
     // building table in bottom-up manner
     int i, index = 0;
     for (i=1; i<=n; i++)
@@ -174,7 +172,7 @@ std::string longestRepeatedSubstring(std::string str)
                 LCSRe[i-1][j-1] < (j - i))
             {
                 LCSRe[i][j] = LCSRe[i-1][j-1] + 1;
-
+ 
                 // updating maximum length of the
                 // substring and updating the finishing
                 // index of the suffix
@@ -188,14 +186,14 @@ std::string longestRepeatedSubstring(std::string str)
                 LCSRe[i][j] = 0;
         }
     }
-
+ 
     // If we have non-empty result, then insert all
     // characters from first character to last
     // character of string
     if (res_length > 0)
         for (i = index - res_length + 1; i <= index; i++)
             res.push_back(str[i-1]);
-
+ 
     return res;
 }
 
