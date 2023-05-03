@@ -72,6 +72,83 @@ uint32_t get_median(std::vector<uint32_t> coordinates_array) {
         return (uint32_t)(coordinates_array[(size-1)/2] + coordinates_array[size/2])/2.0;
 }
 
+// Fills lps[] for given pattern pat[0..M-1]
+void computeLPSArray(char* pat, int M, int* lps)
+{
+    // length of the previous longest prefix suffix
+    int len = 0;
+
+    lps[0] = 0; // lps[0] is always 0
+
+    // the loop calculates lps[i] for i = 1 to M-1
+    int i = 1;
+    while (i < M) {
+        if (pat[i] == pat[len]) {
+            len++;
+            lps[i] = len;
+            i++;
+        }
+        else // (pat[i] != pat[len])
+        {
+            // This is tricky. Consider the example.
+            // AAACAAAA and i = 7. The idea is similar
+            // to search step.
+            if (len != 0) {
+                len = lps[len - 1];
+
+                // Also, note that we do not increment
+                // i here
+            }
+            else // if (len == 0)
+            {
+                lps[i] = 0;
+                i++;
+            }
+        }
+    }
+}
+
+std::vector<int> KMPSearch(char* pat, char* txt)
+{
+    int M = strlen(pat);
+    int N = strlen(txt);
+
+    std::vector<int> indeces;
+
+    // create lps[] that will hold the longest prefix suffix
+    // values for pattern
+    int lps[M];
+
+    // Preprocess the pattern (calculate lps[] array)
+    computeLPSArray(pat, M, lps);
+
+    int i = 0; // index for txt[]
+    int j = 0; // index for pat[]
+    while ((N - i) >= (M - j)) {
+        if (pat[j] == txt[i]) {
+            j++;
+            i++;
+        }
+
+        if (j == M) {
+            indeces.push_back(i - j);
+            j = lps[j - 1];
+        }
+
+        // mismatch after j matches
+        else if (i < N && pat[j] != txt[i]) {
+            // Do not match lps[0..lps[j-1]] characters,
+            // they will match anyway
+            if (j != 0)
+                j = lps[j - 1];
+            else
+                i = i + 1;
+        }
+    }
+
+    return indeces;
+}
+
 sizing_struct detect_size(std::string sequence_of_interest, std::string potential_str_sequence) {
     int rindex = 0;
     int lindex = 0;
@@ -188,7 +265,18 @@ sizing_struct detect_size(std::string sequence_of_interest, std::string potentia
     return return_variable;
 }*/
 
-decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
+//Decomposer Function to find the largest repeating motif in the given range of motif lengths.
+/*
+Current decomposer looks at the indeces where a motif has been found and add it to a dict to count the total number of occurances of a motif. 
+This is leading to errors in the motif that has been found and as such in some cases the wrong motif is being reported for the insert call.
+Some ways to mitigate this:
+1. Normalise the count to the size of the kmers
+2. Trim the chains to get the region in the insert call, the start to the end inside the call itself.
+3. A heuristic to favour the longer chain if the shorter chain is shorter than the longer chain by a certain number of repeat units.
+4. Is the smaller k-mer inside the larger k-mer detected?
+5. A scoring system to see what kind of gaps are allowed.
+*/
+/*decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
 
     std::map<std::string, int> subsequences;
 
@@ -232,6 +320,78 @@ decomposer_struct decompose_string(std::string sequence_of_interest, int lower_l
             final_max_key = max_key;
             final_max_value = max_value;
             spanned = tmp_spanned;
+        }
+    }
+
+    decomposer_struct return_variable = {final_max_key,final_max_value};
+
+    return return_variable;
+}*/
+
+decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
+
+    std::vector<int> counts_for_motifs;
+    std::vector<std::string> motifs;
+
+    for(int motif_length=lower_limit ; motif_length <= upper_limit ; motif_length++) {
+        std::vector<std::map<std::string, int>> subsequence_for_motif_length;
+
+        for(int num_loops = 0; num_loops<motif_length; num_loops++) {
+            int lower_window_var = num_loops;
+            int upper_window_var = num_loops + motif_length;
+
+            std::map<std::string, int> subsequences;
+
+            while(upper_window_var <= sequence_of_interest.length()) {
+                std::string sequence_in_window = sequence_of_interest.substr(lower_window_var,motif_length);
+
+                if (subsequences.find(sequence_in_window) == subsequences.end()) {
+                    subsequences.insert(make_pair(sequence_in_window, 1));
+                }
+                else {
+                    subsequences[sequence_in_window]+=1;
+                }
+
+                lower_window_var++;
+                upper_window_var++;
+            }
+
+            subsequence_for_motif_length.push_back(subsequences);
+        }
+
+        int motif_length_max_count = 0;
+        std::string motif_length_found_motif;
+
+        for(auto subsequence: subsequence_for_motif_length) {
+            int max_value=0;
+            std::string max_key;
+
+            for(auto &entry: subsequence) {
+                if(entry.second > max_value && entry.first.length() == motif_length) {
+                    max_key = entry.first;
+                    max_value = entry.second;
+                }
+            }
+
+            if(max_value > motif_length_max_count) {
+                motif_length_found_motif = max_key;
+                motif_length_max_count = max_value;
+            }
+        }
+
+        counts_for_motifs.push_back(motif_length_max_count);
+        motifs.push_back(motif_length_found_motif);
+    }
+
+    std::string final_max_key;
+    int final_max_value = 0;
+    int spanned = 0;
+
+    for(int i = 0; i < motifs.size(); i++) {
+        if(motifs[i].length() * counts_for_motifs[i] > spanned) {
+            spanned = motifs[i].length() * counts_for_motifs[i];
+            final_max_value = counts_for_motifs[i];
+            final_max_key = motifs[i];
         }
     }
 
