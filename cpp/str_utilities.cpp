@@ -149,6 +149,57 @@ std::vector<int> KMPSearch(std::string pat, std::string txt)
     return indeces;
 }
 
+// Returns the longest repeating non-overlapping
+// substring in str
+std::string longestRepeatedSubstring(std::string str)
+{
+    int n = str.length();
+    int LCSRe[n+1][n+1];
+
+    // Setting all to 0
+    memset(LCSRe, 0, sizeof(LCSRe));
+
+    std::string res; // To store result
+    int res_length  = 0; // To store length of result
+
+    // building table in bottom-up manner
+    int i, index = 0;
+    for (i=1; i<=n; i++)
+    {
+        for (int j=i+1; j<=n; j++)
+        {
+            // (j-i) > LCSRe[i-1][j-1] to remove
+            // overlapping
+            if (str[i-1] == str[j-1] &&
+                LCSRe[i-1][j-1] < (j - i))
+            {
+                LCSRe[i][j] = LCSRe[i-1][j-1] + 1;
+
+                // updating maximum length of the
+                // substring and updating the finishing
+                // index of the suffix
+                if (LCSRe[i][j] > res_length)
+                {
+                    res_length = LCSRe[i][j];
+                    index = std::max(i, index);
+                }
+            }
+            else
+                LCSRe[i][j] = 0;
+        }
+    }
+
+    // If we have non-empty result, then insert all
+    // characters from first character to last
+    // character of string
+    if (res_length > 0)
+        for (i = index - res_length + 1; i <= index; i++)
+            res.push_back(str[i-1]);
+
+    return res;
+}
+
+
 sizing_struct detect_size(std::string sequence_of_interest, std::string potential_str_sequence) {
     int rindex = 0;
     int lindex = 0;
@@ -402,7 +453,7 @@ Some ways to mitigate this:
 }*/
 
 //method 3 by extracting the motif length from the first few elements of the insert
-decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
+/*decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
 
     std::string final_max_key;
     int final_max_value = 0;
@@ -433,6 +484,22 @@ decomposer_struct decompose_string(std::string sequence_of_interest, int lower_l
             final_max_value = max_for_motif_length;
             final_max_key = motif_with_max_value;
         }
+    }
+
+    decomposer_struct return_variable = {final_max_key,final_max_value};
+
+    return return_variable;
+}*/
+
+//decomposer method 4, using DP method to find largest repeating motif in insert
+decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
+
+    std::string final_max_key;
+    int final_max_value = 0;
+
+    final_max_key = longestRepeatedSubstring(sequence_of_interest);
+    while(final_max_key.length() > upper_limit) {
+        final_max_key = longestRepeatedSubstring(final_max_key);
     }
 
     decomposer_struct return_variable = {final_max_key,final_max_value};
