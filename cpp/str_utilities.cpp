@@ -73,7 +73,7 @@ uint32_t get_median(std::vector<uint32_t> coordinates_array) {
 }
 
 // Fills lps[] for given pattern pat[0..M-1]
-void computeLPSArray(char* pat, int M, int* lps)
+void computeLPSArray(std::string pat, int M, int* lps)
 {
     // length of the previous longest prefix suffix
     int len = 0;
@@ -108,10 +108,10 @@ void computeLPSArray(char* pat, int M, int* lps)
     }
 }
 
-std::vector<int> KMPSearch(char* pat, char* txt)
+std::vector<int> KMPSearch(std::string pat, std::string txt)
 {
-    int M = strlen(pat);
-    int N = strlen(txt);
+    int M = pat.length();
+    int N = txt.length();
 
     std::vector<int> indeces;
 
@@ -328,7 +328,8 @@ Some ways to mitigate this:
     return return_variable;
 }*/
 
-decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
+//method 2 with indexing of the motifs and normalising the spanned with the count and motif length
+/*decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
 
     std::vector<int> counts_for_motifs;
     std::vector<std::string> motifs;
@@ -392,6 +393,45 @@ decomposer_struct decompose_string(std::string sequence_of_interest, int lower_l
             spanned = motifs[i].length() * counts_for_motifs[i];
             final_max_value = counts_for_motifs[i];
             final_max_key = motifs[i];
+        }
+    }
+
+    decomposer_struct return_variable = {final_max_key,final_max_value};
+
+    return return_variable;
+}*/
+
+//method 3 by extracting the motif length from the first few elements of the insert
+decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
+
+    std::string final_max_key;
+    int final_max_value = 0;
+    int spanned = 0;
+
+    for(int motif_length=lower_limit ; motif_length <= upper_limit ; motif_length++) {
+        std::vector<std::map<std::string, int>> subsequence_for_motif_length;
+        int max_for_motif_length = 0;
+        std::string motif_with_max_value;
+
+        for(int num_loops = 0; num_loops<motif_length; num_loops++) {
+            
+            std::string possible_motif = sequence_of_interest.substr(num_loops,motif_length);
+
+            auto indeces_of_motif = KMPSearch(possible_motif,sequence_of_interest);
+            
+            int count_of_indeces = indeces_of_motif.size();
+
+            if(count_of_indeces > max_for_motif_length) {
+                max_for_motif_length = count_of_indeces;
+                motif_with_max_value = possible_motif;
+            }
+            //subsequence_for_motif_length.push_back(subsequences);
+        }
+
+        if(motif_with_max_value.length() * max_for_motif_length > spanned) {
+            spanned = motif_with_max_value.length() * max_for_motif_length;
+            final_max_value = max_for_motif_length;
+            final_max_key = motif_with_max_value;
         }
     }
 
