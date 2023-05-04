@@ -554,7 +554,7 @@ Some ways to mitigate this:
     decomposer_struct return_variable = {final_max_key,final_max_value};
 
     return return_variable;
-}
+}*/
 
 int get_haplotag(bam1_t *b) {
     int haplotag = bam_aux2i(bam_aux_get(b, "HP")); //encoded as HP:i:1 or HP:i:2 by Whatshap
@@ -565,7 +565,7 @@ int get_haplotag(bam1_t *b) {
     else {
         return 0;
     }
-}*/
+}
 
 //method 5, with vector substrings
 decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
