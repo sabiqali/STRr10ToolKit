@@ -199,7 +199,7 @@ std::string longestRepeatedSubstring(std::string str)
 
 std::vector<std::string> maxRepSubstr(std::string str, int n){
     
-    std::vector<string> substrings;
+    std::vector<std::string> substrings;
     int len=str.length();
     
     for(int i=0;i<len-n;i++){
@@ -210,7 +210,7 @@ std::vector<std::string> maxRepSubstr(std::string str, int n){
     
     for(int i=0;i<substrings.size();i++){
         
-        std::string temp=substrings[i];
+	std::string temp=substrings[i];
         auto res = find(substrings.begin(), substrings.end(), temp);
         if (res != end(substrings)){
              distStrs.push_back(temp);
