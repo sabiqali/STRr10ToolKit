@@ -266,13 +266,9 @@ sizing_struct detect_size(std::string sequence_of_interest, std::string potentia
             count++;
         }
         else {
-            if(int_count <= 3) {
-                int_motif = sequence_of_interest.substr(lindex+motif_length,rindex-(lindex+motif_length)); //the addition in first parameter is to get past the existing motif at the left index, to the start of the interruption. 
-                int_count++;
-            }
-            else 
-                int_count++;
-            count = count + std::ceil(sequence_of_interest/potential_str_sequence.length());
+            int_motif = sequence_of_interest.substr(lindex+motif_length,rindex-(lindex+motif_length)); //the addition in first parameter is to get past the existing motif at the left index, to the start of the interruption. 
+            int_count++;
+            count++;
         }
 
         lindex = rindex;
