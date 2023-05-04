@@ -197,10 +197,60 @@ std::string longestRepeatedSubstring(std::string str)
     return res;
 }
 
+std::vector<std::string> maxRepSubstr(std::string str, int n){
+    
+    std::vector<string> substrings;
+    int len=str.length();
+    
+    for(int i=0;i<len-n;i++){
+        substrings.push_back(str.substr(i,n));
+    }
+    
+    std::vector<std::string> distStrs;
+    
+    for(int i=0;i<substrings.size();i++){
+        
+        std::string temp=substrings[i];
+        auto res = find(substrings.begin(), substrings.end(), temp);
+        if (res != end(substrings)){
+             distStrs.push_back(temp);
+        }
+       
+    }
+    
+    
+    int maxrep=0;
+    
+    for(int i=0;i<distStrs.size();i++){
+    
+        int rep=0;
+        rep=count(substrings.begin(),substrings.end(),distStrs[i]);
+        
+        if(rep>maxrep){
+            maxrep=rep;
+        }
+       
+    }
+    
+    
+    std::vector<std::string> results;
+    
+    for (auto& it : distStrs) {
+  
+        if(count(substrings.begin(),substrings.end(), it)==maxrep && count(results.begin(),results.end(),it)==0){
+            results.push_back(it);
+        }
+    }
+    
+    return results;
+}
+
 
 sizing_struct detect_size(std::string sequence_of_interest, std::string potential_str_sequence) {
     int rindex = 0;
     int lindex = 0;
+
+    int int_count = 0;
 
     int motif_length = potential_str_sequence.length();
     int count = 0;
@@ -216,8 +266,13 @@ sizing_struct detect_size(std::string sequence_of_interest, std::string potentia
             count++;
         }
         else {
-            int_motif = sequence_of_interest.substr(lindex+motif_length,rindex-(lindex+motif_length)); //the addition in first parameter is to get past the existing motif at the left index, to the start of the interruption. 
-            count++;
+            if(int_count <= 3) {
+                int_motif = sequence_of_interest.substr(lindex+motif_length,rindex-(lindex+motif_length)); //the addition in first parameter is to get past the existing motif at the left index, to the start of the interruption. 
+                int_count++;
+            }
+            else 
+                int_count++;
+            count = count + std::ceil(sequence_of_interest/potential_str_sequence.length());
         }
 
         lindex = rindex;
@@ -490,7 +545,7 @@ Some ways to mitigate this:
 }*/
 
 //decomposer method 4, using DP method to find largest repeating motif in insert
-decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
+/*decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
 
     std::string final_max_key;
     int final_max_value = 0;
@@ -514,6 +569,30 @@ int get_haplotag(bam1_t *b) {
     else {
         return 0;
     }
+}*/
+
+//method 5, with vector substrings
+decomposer_struct decompose_string(std::string sequence_of_interest, int lower_limit, int upper_limit) {
+
+    int spanned = 0;
+    std::string final_max_key;
+    int final_max_value = 0;
+
+    for(int motif_length=upper_limit ; motif_length >= lower_limit ; motif_length--) {
+        auto results = maxRepSubstr(sequence_of_interest, motif_length);
+
+        auto searching_for_motif = KMPSearch(results[0],sequence_of_interest);
+
+        if(searching_for_motif.size() * results[0].length() > spanned) {
+            spanned = searching_for_motif.size() * results[0].length();
+            final_max_key = results[0];
+            final_max_value = searching_for_motif.size();
+        }
+    }
+
+    decomposer_struct return_variable = {final_max_key,final_max_value};
+
+    return return_variable;
 }
 
 std::vector<std::string> get_consensus_sequence(std::vector<std::string> sequences) { //m is rows and n is columns

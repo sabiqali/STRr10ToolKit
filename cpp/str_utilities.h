@@ -4,6 +4,7 @@
 #include <zlib.h>
 #include <stdio.h>
 #include <cstring>
+#include <string.h>
 #include <iostream>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -24,7 +25,7 @@
 #include "htslib/htslib/faidx.h"
 #include "htslib/htslib/hts.h"
 #include <stdint.h>
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 #include "abPOA/include/abpoa.h"
 
 struct decomposer_struct {
